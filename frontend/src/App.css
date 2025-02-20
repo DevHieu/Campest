@@ -1,0 +1,33 @@
+@property --buttonColor {
+  syntax: "<color>";
+  initial-value: #d1d104;
+  inherits: false;
+}
+
+@property --joinButtonColor {
+  syntax: "<color>";
+  initial-value: white;
+  inherits: false;
+}
+
+button {
+  font-family: "Merienda", sans-serif;
+  font-size: 1em;
+  cursor: pointer;
+  background-color: var(--buttonColor);
+  transition: --buttonColor1 0.2s, box-shadow 0.1s;
+  color: black;
+  padding: 0.6em 1.2em;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  border: 2px solid black;
+  box-shadow: 2px 3px black;
+  &:hover {
+    --buttonColor: #f2f2ce;
+    box-shadow: 3px 4px black;
+  }
+  &:active {
+    --buttonColor: #d0d0b4;
+  }
+}

@@ -1,0 +1,33 @@
+.information {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background-color: var(--primary-green);
+  .logo {
+    width: 200px;
+  }
+  & h2 {
+    font-size: 23px;
+    font-weight: 800;
+  }
+  & p {
+    font-family: "Roboto", serif;
+  }
+  .stores {
+    width: 20rem;
+  }
+  .social {
+    .social_items {
+      display: flex;
+      gap: 20px;
+      margin-top: 20px;
+      & a {
+        transition: 0.1s;
+        &:hover {
+          color: black;
+          transform: scale(1.2);
+        }
+      }
+    }
+  }
+}

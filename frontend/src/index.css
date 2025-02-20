@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Merienda:wght@300..900&family=Pangolin&family=Protest+Revolution&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Merienda:wght@300..900&family=Pangolin&family=Protest+Revolution&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 
 * {
   padding: 0;
@@ -8,7 +8,6 @@
 
 :root {
   font-family: "Merienda", sans-serif;
-  /* font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif; */
   line-height: 1.5;
   font-weight: 400;
 
@@ -21,7 +20,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --primary-green: #2c5e1a;
+  --primary-green: #d1d104;
+  --secondary-green: #f2f2ce;
   --white: #ffffff;
   --black: #262315;
 }
@@ -35,16 +35,9 @@ a:hover {
   color: #262315;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  color: #262315;
-  cursor: pointer;
-  transition: border-color 0.25s;
+h1 {
+  margin: 64px;
+  font-weight: 800;
 }
 
 @media (prefers-color-scheme: dark) {
