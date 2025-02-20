@@ -3,6 +3,7 @@
   align-items: center;
   justify-content: space-around;
   background-color: var(--primary-green);
+  min-height: 15rem;
   .logo {
     width: 200px;
   }

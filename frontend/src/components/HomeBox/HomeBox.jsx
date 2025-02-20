@@ -19,7 +19,7 @@ function HomeBox({ type, icon, title, describe, image }) {
       ) : (
         <div>
           <div className={styles.image}>
-            <img src={image} alt="blog-image" />
+            <img src={image} alt="blog-image" loading="lazy" />
           </div>
           <h2>{title}</h2>
           <p>{describe}</p>

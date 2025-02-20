@@ -13,7 +13,7 @@ export default function Navbar() {
           </Link>
         </div>
         <div className={styles.nav_list}>
-          <Link to="/schedule" className={styles.nav_list_items}>
+          <Link to="/survival" className={styles.nav_list_items}>
             Kĩ năng sinh tồn
           </Link>
           <Link to="/schedule" className={styles.nav_list_items}>

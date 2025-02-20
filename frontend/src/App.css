@@ -10,7 +10,12 @@
   inherits: false;
 }
 
-button {
+.center {
+  min-height: 63.4vh;
+}
+
+button,
+.a_btn {
   font-family: "Merienda", sans-serif;
   font-size: 1em;
   cursor: pointer;
