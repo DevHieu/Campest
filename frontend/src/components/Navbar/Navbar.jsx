@@ -25,6 +25,9 @@ export default function Navbar() {
           <Link to="/schedule" className={styles.nav_list_items}>
             Lên Lịch trình
           </Link>
+          <Link to="/login" className={styles.nav_list_items}>
+            Đăng nhập
+          </Link>
         </div>
       </div>
     </div>

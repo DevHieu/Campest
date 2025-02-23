@@ -6,14 +6,23 @@ import { Link } from "react-router-dom";
 
 export default function SchedulePage() {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const apiKey = import.meta.env.VITE_WP_API;
 
   useEffect(() => {
-    axios.get(apiKey + "/posts").then((res) => {
-      setData(res.data.posts);
-    });
+    axios
+      .get(apiKey + "/posts")
+      .then((res) => {
+        setData(res.data.posts);
+      })
+      .then(() => {
+        setLoading(false);
+      });
   }, []);
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className={styles.wrapper}>
       {data.map((value) => {

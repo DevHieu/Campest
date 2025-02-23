@@ -7,6 +7,8 @@ import HomePage from "./pages/HomePage";
 import SchedulePage from "./pages/SchedulePage";
 import SurvivalPage from "./pages/SurvivalPage";
 import SurvivalPost from "./pages/SurvivalPage/SurvivalPost";
+import Login from "./pages/LoginPage";
+import SignUp from "./pages/SignUpPage";
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
           <Route path="/schedule" element={<SchedulePage />}></Route>
           <Route path="/survival" element={<SurvivalPage />}></Route>
           <Route path="/survival/post" element={<SurvivalPost />}></Route>
+          <Route path="/login" element={<Login />}></Route>
+          <Route path="/signup" element={<SignUp />}></Route>
         </Routes>
       </div>
       <Footer />

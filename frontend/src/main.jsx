@@ -16,7 +16,7 @@ const theme = createTheme({
   },
 
   typography: {
-    fontFamily: ["Protest Revolution", "sans-serif"].join(","),
+    fontFamily: ["Merienda", "sans-serif"].join(","),
   },
 });
 
