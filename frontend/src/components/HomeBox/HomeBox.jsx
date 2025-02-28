@@ -1,9 +1,11 @@
 import React from "react";
 import styles from "./HomeBox.module.css";
+import { Link } from "react-router-dom";
 
-function HomeBox({ type, icon, title, describe, image }) {
+function HomeBox({ type, icon, title, describe, image, link }) {
   return (
-    <div
+    <Link
+      to={link}
       className={
         type === "feature"
           ? styles.box_wrapper
@@ -25,7 +27,7 @@ function HomeBox({ type, icon, title, describe, image }) {
           <p>{describe}</p>
         </div>
       )}
-    </div>
+    </Link>
   );
 }
 

@@ -20,18 +20,21 @@ export default function HomePage() {
             icon={<FaMapMarkedAlt size={30} />}
             title="Tìm kiếm bãi cắm trại"
             describe="Khám phá một loạt các khu cắm trại trên nhiều địa điểm khác nhau."
+            link="/survival"
           />
           <HomeBox
             type="feature"
             icon={<FaFire size={30} />}
             title="Kĩ năng sinh tồn"
             describe="Học các kỹ năng sinh tồn cần thiết cho cuộc phiêu lưu ngoài trời của bạn."
+            link="/survival"
           />
           <HomeBox
             type="feature"
             icon={<FaRoute size={30} />}
             title="Lên kế hoạch cắm trại"
             describe="Lên kế hoạch chuyến đi dễ dàng với công cụ thông minh của chúng tôi!"
+            link="/schedule"
           />
         </div>
       </div>

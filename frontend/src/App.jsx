@@ -1,7 +1,9 @@
 import { Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthProvider";
 import "./App.css";
-import Navbar from "./components/Navbar/Navbar";
-import Footer from "./components/Footer/Footer";
+
+import Navbar from "./layouts/Navbar/Navbar";
+import Footer from "./layouts/Footer/Footer";
 
 import HomePage from "./pages/HomePage";
 import SchedulePage from "./pages/SchedulePage";
@@ -12,7 +14,7 @@ import SignUp from "./pages/SignUpPage";
 
 function App() {
   return (
-    <>
+    <AuthProvider>
       <Navbar />
       <div className="center">
         <Routes>
@@ -25,7 +27,7 @@ function App() {
         </Routes>
       </div>
       <Footer />
-    </>
+    </AuthProvider>
   );
 }
 

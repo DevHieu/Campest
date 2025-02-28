@@ -51,6 +51,11 @@
           transform: scaleX(1);
         }
       }
+      & > .nav_list_avatar {
+      }
+    }
+    & > .avatar {
+      cursor: pointer;
     }
   }
 }
