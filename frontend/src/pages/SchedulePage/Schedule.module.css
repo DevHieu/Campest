@@ -1,0 +1,35 @@
+.wrapper {
+  width: 90%;
+  text-align: center;
+  margin: auto;
+  margin-bottom: 5rem;
+  h2 {
+    font-size: 40px;
+    margin-top: 20px;
+  }
+  .search {
+    .text_field {
+      width: 50%;
+      margin: 10px 0;
+    }
+    & > button {
+      background-color: var(--buttonColor);
+      border: 2px solid black;
+      font-weight: 700;
+    }
+
+    .choose_location {
+      width: 50%;
+      margin: 2rem auto;
+      & button {
+        box-shadow: none;
+        margin: 0 5px;
+      }
+    }
+  }
+  & > hr {
+    margin: 3rem 0;
+  }
+  .trips_list {
+  }
+}
