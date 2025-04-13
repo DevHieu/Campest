@@ -113,7 +113,6 @@ export default function SignUp() {
       .then(
         (response) => {
           handleResponse(response);
-          console.log(response);
         },
         (error) => {
           setVerifyEmail(false);

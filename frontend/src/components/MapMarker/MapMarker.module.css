@@ -1,0 +1,15 @@
+.marker {
+  position: relative;
+  /* background-color: var(--marker); */
+  color: white;
+  border-radius: 50% 50% 50% 0;
+  width: 36px;
+  height: 36px;
+  transform: rotate(-45deg);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px;
+}
