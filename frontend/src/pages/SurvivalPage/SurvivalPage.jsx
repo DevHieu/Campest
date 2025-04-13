@@ -43,7 +43,7 @@ export default function SchedulePage() {
                 pathname: "post",
                 search: "?postId=" + value.ID,
               }}
-              className={`a_btn ${styles.more}`}
+              className={`shadow_btn ${styles.more}`}
             >
               Đọc tiếp...
             </Link>

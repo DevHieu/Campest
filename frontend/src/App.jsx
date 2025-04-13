@@ -1,34 +1,23 @@
-import { Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthProvider";
+import { useLocation } from "react-router-dom";
 import "./App.css";
 
 import Navbar from "./layouts/Navbar/Navbar";
 import Footer from "./layouts/Footer/Footer";
-
-import HomePage from "./pages/HomePage";
-import Login from "./pages/LoginPage";
-import SignUp from "./pages/SignUpPage";
-import SurvivalPage from "./pages/SurvivalPage";
-import SurvivalPost from "./pages/SurvivalPage/SurvivalPost";
-import SchedulePage from "./pages/SchedulePage";
-import TripPage from "./pages/SchedulePage/TripPage";
+import AppRoutes from "./routes/AppRoutes";
 
 function App() {
+  const location = useLocation();
+
+  const hideFooter = location.pathname.startsWith("/schedule/trip/");
+
   return (
     <AuthProvider>
       <Navbar />
       <div className="center">
-        <Routes>
-          <Route path="/" element={<HomePage />}></Route>
-          <Route path="/login" element={<Login />}></Route>
-          <Route path="/signup" element={<SignUp />}></Route>
-          <Route path="/survival" element={<SurvivalPage />}></Route>
-          <Route path="/survival/post" element={<SurvivalPost />}></Route>
-          <Route path="/schedule" element={<SchedulePage />}></Route>
-          <Route path="/schedule/trip" element={<TripPage />}></Route>
-        </Routes>
+        <AppRoutes />
       </div>
-      <Footer />
+      {!hideFooter && <Footer />}
     </AuthProvider>
   );
 }

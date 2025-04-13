@@ -3,7 +3,6 @@ import useDebounce from "../../hooks/useDebounce";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import { useAuth } from "../../context/AuthProvider";
 
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -58,18 +57,11 @@ export default function LoginPage() {
   const classes = useStyles();
   const url = import.meta.env.VITE_BACKEND_API;
   const navigateTo = useNavigate();
-  const { user } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [verify, setVerify] = useState(true);
   const [remember, setRemember] = useState(false);
-
-  useEffect(() => {
-    if (user !== null) {
-      navigateTo("/");
-    }
-  }, []);
 
   const handleLogin = () => {
     if (email === "" || password === "") {

@@ -1,0 +1,80 @@
+.wrapper {
+  display: flex;
+  position: relative;
+  .trip {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 38%;
+    box-shadow: 5px 0px 20px 0px darkgray;
+    z-index: 10;
+    min-height: calc(100vh - 60px);
+    background-color: white;
+    .infomation {
+      box-shadow: inset 0px 0px 5px darkgrey;
+      position: relative;
+      .picker {
+        position: absolute;
+        top: 6rem;
+        right: -2rem;
+        z-index: 100;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .color_picker {
+        position: absolute;
+        right: 0;
+        margin: 2rem;
+        padding: 10px;
+        background-color: white;
+        .picker_icon {
+          font-size: 28px;
+          color: black;
+        }
+      }
+      .choose_date {
+        display: flex;
+        gap: 20px;
+        padding: 2rem 4rem;
+      }
+    }
+    .notes {
+      background-color: white;
+      padding: 2rem 4rem;
+      & > h2 {
+        font-size: 28px;
+        font-weight: 900;
+        margin-bottom: 20px;
+      }
+    }
+    .itinerary {
+      background-color: white;
+      padding: 2rem 4rem;
+      & > h2 {
+        font-size: 28px;
+        font-weight: 900;
+        margin-bottom: 20px;
+      }
+      .iti_list {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+      .search_box {
+        margin-top: 2rem;
+      }
+    }
+  }
+  .map {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 62%;
+    height: 100vh;
+    z-index: 0;
+  }
+}
+hr {
+  width: 90%;
+  margin: 0 auto;
+}

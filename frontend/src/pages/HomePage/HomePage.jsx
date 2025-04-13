@@ -9,7 +9,7 @@ export default function HomePage() {
       <div className={styles.home_wrapper}>
         <div className={styles.title}>
           <h1>Cắm trại – Đơn giản là tận hưởng!</h1>
-          <button className={styles.button}>Start Exploring</button>
+          <button className="shadow_btn">Start Exploring</button>
         </div>
       </div>
       <div className={styles.features}>
@@ -67,7 +67,7 @@ export default function HomePage() {
           Cùng chúng tôi chinh phục thiên nhiên và rèn luyện kỹ năng sinh tồn
           của bạn.
         </h3>
-        <button className={styles.join_button}>Join Us</button>
+        <button className={`shadow_btn ${styles.join_button}`}>Join Us</button>
       </div>
     </div>
   );

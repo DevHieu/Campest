@@ -11,11 +11,10 @@
 }
 
 .center {
-  min-height: 63.4vh;
+  min-height: 67.5vh;
 }
 
-button,
-.a_btn {
+.shadow_btn {
   font-family: "Merienda", sans-serif;
   font-size: 1em;
   cursor: pointer;
