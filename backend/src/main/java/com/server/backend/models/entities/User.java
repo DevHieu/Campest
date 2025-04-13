@@ -19,7 +19,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @RequiredArgsConstructor
 public class User {
-
     @Id
     private String id;
     @NonNull
