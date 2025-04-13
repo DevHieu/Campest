@@ -37,10 +37,11 @@ public class SecurityConfig {
 
     return http.cors(Customizer.withDefaults())
         .csrf(customizer -> customizer.disable())
+
         .authorizeHttpRequests(request -> request
             .requestMatchers("/signup", "/signin").permitAll()
             .anyRequest().authenticated())
-        .httpBasic(Customizer.withDefaults())
+        .httpBasic(customizer -> customizer.disable())
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
