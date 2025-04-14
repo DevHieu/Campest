@@ -14,6 +14,7 @@ import lombok.Getter;
 public class Itinerary {
   @Id
   private String id;
+  private String userId; // connect to user
   private String name;
   private String startDate;
   private String endDate;
