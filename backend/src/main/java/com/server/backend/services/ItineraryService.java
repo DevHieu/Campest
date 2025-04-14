@@ -36,8 +36,8 @@ public class ItineraryService {
         .orElse(null);
   }
 
-  public Page<ItinerarySummary> getAllItineraries(Pageable pageable) {
-    Query query = new Query();
+  public Page<ItinerarySummary> getUserItineraries(String userId, Pageable pageable) {
+    Query query = new Query(Criteria.where("userId").is(userId));
     query.fields()
         .include("id")
         .include("name")

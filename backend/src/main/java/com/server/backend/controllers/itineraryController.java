@@ -37,11 +37,11 @@ public class itineraryController {
     return itineraryService.getItinerary(id);
   }
 
-  @GetMapping("/itineraries")
-  public Page<ItinerarySummary> getItinerary(@RequestParam(defaultValue = "0") int page,
+  @GetMapping("/itineraries/{userId}")
+  public Page<ItinerarySummary> getItinerary(@PathVariable String userId, @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
     Pageable pageable = PageRequest.of(page, size, Sort.by("startDate").descending());
-    return itineraryService.getAllItineraries(pageable);
+    return itineraryService.getUserItineraries(userId, pageable);
   }
 
   @PutMapping("/update-itinerary-detail")
