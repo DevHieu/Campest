@@ -18,7 +18,7 @@ export default function SchedulePage() {
   const url = import.meta.env.VITE_BACKEND_API;
   const COUNTRY_API_KEY = import.meta.env.VITE_COUNTRY_CITIES_API_KEY;
 
-  const [loading, isLoading] = useState(false);
+  const [loading, isLoading] = useState(true);
   const [itineraries, setItineraries] = useState([]);
   const [countryData, setCountryData] = useState({});
   const [country, setCountry] = useState({});
@@ -26,7 +26,7 @@ export default function SchedulePage() {
   const [state, setState] = useState({});
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const { cookies, logout } = useAuth();
+  const { user, cookies, logout } = useAuth();
   const navigateTo = useNavigate();
   dayjs.extend(customParseFormat);
 
@@ -65,20 +65,25 @@ export default function SchedulePage() {
     )
       .then((response) => response.json())
       .then((result) => setStateData(result))
+      .then(() => isLoading(false))
       .catch((error) => console.log("error", error));
   }, [country]);
 
   //Get itineraries from db
   useEffect(() => {
-    const options = {
-      headers: {
-        Authorization: `Bearer ${cookies.token}`,
-      },
-    };
-    axios.get(`${url}/itineraries?page=0&size=5`, options).then((res) => {
-      setItineraries(res.data.content);
-    });
-  }, [cookies.token]);
+    if (user) {
+      const options = {
+        headers: {
+          Authorization: `Bearer ${cookies.token}`,
+        },
+      };
+      axios
+        .get(`${url}/itineraries/${user.id}?page=0&size=5`, options)
+        .then((res) => {
+          setItineraries(res.data.content);
+        });
+    }
+  }, [cookies.token, user]);
 
   const getCoordinate = async () => {
     console.log(state);
@@ -108,9 +113,8 @@ export default function SchedulePage() {
     }
 
     const randomId = nanoid();
-
     const coor = await getCoordinate();
-    console.log(coor);
+    const name = state?.name || country?.name || "Unknown";
 
     const options = {
       headers: {
@@ -123,7 +127,8 @@ export default function SchedulePage() {
         `${url}/create-itinerary`,
         {
           id: randomId,
-          name: "Trip to " + (!state ? state.name : country.name),
+          userId: user.id,
+          name: "Trip to " + name,
           startDate: startDate,
           endDate: endDate,
           latitude: coor.lat,
@@ -182,7 +187,6 @@ export default function SchedulePage() {
             />
           )}
         ></Autocomplete>
-
         <div className={styles.choose_date}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
