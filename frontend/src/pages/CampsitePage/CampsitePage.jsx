@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import useDidMount from "../../hooks/useDidMount";
 import axios from "axios";
 import { useAuth } from "../../context/AuthProvider";
+import waiting_img from "../../assets/images/campsite_waiting.png";
 import styles from "./CampsitePage.module.css";
 import { Button, TextField, Snackbar, Alert } from "@mui/material";
 
@@ -119,7 +119,10 @@ export default function CampsitePage() {
       </div>
       <div className={styles.right}>
         {!placeSelected ? (
-          <div>Tìm nơi bạn muốn đến</div>
+          <div className={styles.waiting}>
+            <img src={waiting_img} alt="waiting" />
+            <h2>Hãy chọn một bãi cắm trại</h2>
+          </div>
         ) : (
           <div className={styles.container}>
             <div className={styles.header}>

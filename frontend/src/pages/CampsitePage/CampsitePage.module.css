@@ -31,6 +31,14 @@
     width: 60%;
     display: flex;
     overflow-y: auto;
+    .waiting {
+      display: flex;
+      flex-direction: column;
+      margin: 0 auto;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+    }
     .container {
       width: 100%;
       & hr {
