@@ -19,7 +19,8 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
+  --body-height: calc(100vh - 15em - 60px);
+  --max-height-without-footer: calc(100vh - 60px);
   --primary-green: #d1d104;
   --secondary-green: #f2f2ce;
   --white: #ffffff;

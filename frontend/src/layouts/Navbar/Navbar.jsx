@@ -25,7 +25,7 @@ export default function Navbar() {
           <Link to="/survival" className={styles.nav_list_items}>
             Kĩ năng sinh tồn
           </Link>
-          <Link to="/schedule" className={styles.nav_list_items}>
+          <Link to="/campsite" className={styles.nav_list_items}>
             Tìm bãi cắm trại
           </Link>
           <Link to="/schedule" className={styles.nav_list_items}>

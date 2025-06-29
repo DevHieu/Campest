@@ -7,6 +7,7 @@ import SurvivalPage from "../pages/SurvivalPage";
 import SurvivalPost from "../pages/SurvivalPage/SurvivalPost";
 import SchedulePage from "../pages/SchedulePage";
 import TripPage from "../pages/SchedulePage/TripPage";
+import CampsitePage from "../pages/CampsitePage/CampsitePage";
 
 const AppRoutes = () => {
   return (
@@ -18,6 +19,7 @@ const AppRoutes = () => {
       <Route path="/survival/post" element={<SurvivalPost />} />
       <Route path="/schedule" element={<SchedulePage />} />
       <Route path="/schedule/trip/:id" element={<TripPage />} />
+      <Route path="/campsite" element={<CampsitePage />} />
     </Routes>
   );
 };

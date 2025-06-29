@@ -1,0 +1,106 @@
+.wrapper {
+  display: flex;
+  overflow: hidden;
+  .left {
+    height: var(--max-height-without-footer);
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 5px 0px 20px 0px darkgray;
+    overflow-y: auto;
+    .search_wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      border-bottom: 2px solid darkgrey;
+      .search_box {
+        width: 60%;
+        margin: 2em 0;
+        font-size: 30px;
+      }
+    }
+    .results {
+      display: flex;
+      flex-direction: column;
+      margin-top: 2em;
+    }
+  }
+  .right {
+    height: var(--max-height-without-footer);
+    width: 60%;
+    display: flex;
+    overflow-y: auto;
+    .container {
+      width: 100%;
+      & hr {
+        margin: 2rem auto;
+      }
+      .header {
+        display: flex;
+        align-items: center;
+        margin: 3rem 5rem;
+        & > img {
+          width: 16rem;
+          height: calc(16rem / 16 * 9);
+          object-fit: cover;
+        }
+        .info {
+          color: black;
+          margin-left: 3rem;
+          & > h1 {
+            margin: 0;
+            margin-left: -1rem;
+          }
+        }
+      }
+      .detail {
+        margin: 0 5rem;
+        & > h2 {
+          margin-bottom: 2rem;
+        }
+        .actions {
+          display: flex;
+          gap: 2rem;
+          .actions_btn {
+            color: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+            background: transparent;
+            border: 1px solid darkgray;
+            gap: 1rem;
+            padding: 1rem 2rem;
+            font-size: 20px;
+            font-weight: 500;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.15s;
+            &:hover {
+              background-color: rgba(0, 0, 0, 0.1);
+            }
+          }
+        }
+        .detail_list {
+          list-style: none;
+          .detail_item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            & > span {
+              font-weight: 600;
+            }
+            .detail_icon {
+              font-size: 30px;
+            }
+          }
+        }
+      }
+      .reviews {
+        margin: 0 5rem;
+      }
+    }
+  }
+}

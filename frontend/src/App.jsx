@@ -9,7 +9,9 @@ import AppRoutes from "./routes/AppRoutes";
 function App() {
   const location = useLocation();
 
-  const hideFooter = location.pathname.startsWith("/schedule/trip/");
+  const hideFooter =
+    location.pathname.startsWith("/schedule/trip/") ||
+    location.pathname.startsWith("/campsite");
 
   return (
     <AuthProvider>

@@ -11,7 +11,7 @@
 }
 
 .center {
-  min-height: 67.5vh;
+  min-height: var(--body-height);
 }
 
 .shadow_btn {
