@@ -10,7 +10,7 @@ A website is built to help beginners who are starting to learn about camping eas
 
 ## 📦 Tech Stack
 
-**Client:** React, MUI, HERE Maps API
+**Client:** React, MUI, Google Maps API
 
 **Server**: Spring (Spring boot, Spring security)
 
@@ -21,7 +21,7 @@ A website is built to help beginners who are starting to learn about camping eas
 - Register / login
 - Browse survival skills and basic camping guides
 - Plan your camping trip
-- Find campsites (in progress)
+- Find campsites (fixing)
 - Find and buy camping gear (in progress)
 
 
