@@ -17,8 +17,8 @@ public class BackendApplication implements CommandLineRunner {
 	}
 
 	public static void main(String[] args) {
-		System.out.println();
 		SpringApplication.run(BackendApplication.class, args);
+		System.out.println("Running...");
 
 	}
 

@@ -3,25 +3,16 @@ package com.server.backend.services;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class CampsiteService {
 
-  @Value("${google.places.api.key}")
-  private String apiKey;
-  private final WebClient webClient;
-
-  public CampsiteService() {
-    this.webClient = WebClient.builder()
-        .baseUrl("https://maps.googleapis.com/maps/api/place")
-        .build();
-  }
+  @Autowired
+  private GooglePlaceService googlePlaceService;
 
   private ResponseEntity<Map<String, Object>> handleGoogleApiResponse(String status, List<Map<String, Object>> results,
       Map<String, Object> rawResponse) {
@@ -58,30 +49,7 @@ public class CampsiteService {
   // Return a map of places based on the search query
   public Map<String, Object> searchPlaces(String place) {
     String query = "campsite+in+" + place;
-    return webClient.get()
-        .uri(uriBuilder -> uriBuilder
-            .path("/textsearch/json")
-            .queryParam("query", query)
-            .queryParam("key", apiKey)
-            .build())
-        .retrieve()
-        .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
-        })
-        .block();
-  }
-
-  // Return details of a campsite based on the place id
-  public Map<String, Object> getPlaceDetails(String placeId) {
-    return webClient.get()
-        .uri(uriBuilder -> uriBuilder
-            .path("/details/json")
-            .queryParam("place_id", placeId)
-            .queryParam("key", apiKey)
-            .build())
-        .retrieve()
-        .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
-        })
-        .block();
+    return googlePlaceService.autocompletePlace(query);
   }
 
   public ResponseEntity<Map<String, Object>> findCampsite(String place) {
@@ -96,8 +64,7 @@ public class CampsiteService {
   }
 
   public ResponseEntity<Map<String, Object>> placeDetails(String placeId) {
-    Map<String, Object> placeDetails = this.getPlaceDetails(placeId);
-    placeDetails.forEach((k, v) -> System.out.println(k + " : " + v));
+    Map<String, Object> placeDetails = googlePlaceService.getPlaceDetails(placeId);
     return ResponseEntity.ok(placeDetails);
   }
 

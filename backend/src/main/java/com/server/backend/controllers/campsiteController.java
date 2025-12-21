@@ -23,7 +23,6 @@ public class campsiteController {
 
   @GetMapping("/get-place-details/{placeId}")
   public ResponseEntity<Map<String, Object>> getPlaceDetails(@PathVariable String placeId) {
-    System.out.println(placeId);
     return campsiteService.placeDetails(placeId);
   }
 }

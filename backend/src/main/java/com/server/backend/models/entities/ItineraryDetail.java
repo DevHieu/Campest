@@ -12,6 +12,7 @@ import lombok.Setter;
 public class ItineraryDetail {
   @Id
   private String id;
+  private String place_id;
   private String name;
   private String notes;
   private String latitude;

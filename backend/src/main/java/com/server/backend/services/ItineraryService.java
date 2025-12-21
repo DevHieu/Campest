@@ -31,6 +31,9 @@ public class ItineraryService {
   @Autowired
   private MongoTemplate mongoTemplate;
 
+  @Autowired
+  private GooglePlaceService googlePlaceService;
+
   public Itinerary getItinerary(String id) {
     return itineraryRepository.findById(id)
         .orElse(null);
@@ -40,6 +43,7 @@ public class ItineraryService {
     Query query = new Query(Criteria.where("userId").is(userId));
     query.fields()
         .include("id")
+        .include("place_id")
         .include("name")
         .include("startDate")
         .include("endDate");
@@ -82,5 +86,13 @@ public class ItineraryService {
 
   public void deleteItinerary(String id) {
     itineraryRepository.deleteById(id);
+  }
+
+  public Map<String, Object> searchPlaces(String query, double lat, double lng) {
+    return googlePlaceService.textSearch(query, lat, lng);
+  }
+
+  public Map<String, Object> getPlaceDetails(String placeId) {
+    return googlePlaceService.getPlaceDetails(placeId);
   }
 }
