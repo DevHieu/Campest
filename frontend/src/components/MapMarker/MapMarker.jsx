@@ -7,7 +7,7 @@ const MapMarker = ({ index, color, id }) => {
       style={{ backgroundColor: color }}
       data-marker-id={id}
     >
-      <div>{index + 1}</div>
+      <div className={styles.index}>{index + 1}</div>
     </div>
   );
 };

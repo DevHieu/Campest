@@ -24,8 +24,10 @@ export default function SchedulePage() {
   const [country, setCountry] = useState({});
   const [stateData, setStateData] = useState({});
   const [state, setState] = useState({});
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(dayjs().format("MM/DD/YYYY"));
+  const [endDate, setEndDate] = useState(
+    dayjs().add(1, "day").format("MM/DD/YYYY")
+  );
   const { user, cookies, logout } = useAuth();
   const navigateTo = useNavigate();
   dayjs.extend(customParseFormat);
@@ -78,7 +80,10 @@ export default function SchedulePage() {
         },
       };
       axios
-        .get(`${url}/itineraries/${user.id}?page=0&size=5`, options)
+        .get(
+          `${url}/itinerary/get-user-itineraries/${user.id}?page=0&size=5`,
+          options
+        )
         .then((res) => {
           setItineraries(res.data.content);
         });
@@ -90,7 +95,7 @@ export default function SchedulePage() {
     try {
       // Has the user selected the state yet?
       // If selected ? get state coordinates : get country coordinates
-      let url = !state
+      let url = state
         ? `https://api.countrystatecity.in/v1/countries/${country.iso2}/states/${state.iso2}`
         : `https://api.countrystatecity.in/v1/countries/${country.iso2}`;
 
@@ -124,7 +129,7 @@ export default function SchedulePage() {
 
     axios
       .post(
-        `${url}/create-itinerary`,
+        `${url}/itinerary/create-itinerary`,
         {
           id: randomId,
           userId: user.id,
@@ -192,6 +197,7 @@ export default function SchedulePage() {
             <DatePicker
               label="Ngày bắt đầu"
               format="DD/MM/YYYY"
+              value={dayjs(startDate, "MM/DD/YYYY")}
               onChange={(value) => {
                 setStartDate(value.format("MM/DD/YYYY"));
               }}
@@ -201,6 +207,7 @@ export default function SchedulePage() {
             <DatePicker
               label="Ngày kết thúc"
               format="DD/MM/YYYY"
+              value={dayjs(endDate, "MM/DD/YYYY")}
               onChange={(value) => {
                 setEndDate(value.format("MM/DD/YYYY"));
               }}

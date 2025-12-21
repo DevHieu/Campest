@@ -2,10 +2,10 @@
   display: flex;
   position: relative;
   margin-left: 1rem;
+
   .index {
     position: absolute;
     color: white;
-    /* background-color: var(--marker); */
     width: 2rem;
     height: 2rem;
     border-radius: 50%;
@@ -17,13 +17,16 @@
     transform: translate(-1rem, 1.5rem);
   }
   .content {
+    display: flex;
+    flex-direction: column;
     background-color: #f3f4f5;
     width: 90%;
     padding: 1rem 2rem;
-
+    transition: 150ms all;
     & > button {
       font-size: 17px;
       color: var(--text);
+      background: transparent !important;
       font-family: "Merienda", sans-serif;
       font-weight: 900;
       border: none;
@@ -47,6 +50,10 @@
     }
   }
   &:hover {
+    .content {
+      background-color: rgb(252, 251, 251);
+      box-shadow: 0 0 20px;
+    }
     .action {
       opacity: 1;
     }

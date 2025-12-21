@@ -31,7 +31,7 @@ function TripItem({ id, index, name, startDate, endDate, setItineraries }) {
         Authorization: `Bearer ${cookies.token}`, // Dùng token từ user
       },
     };
-    axios.delete(`${url}/delete-itinerary/${id}`, options);
+    axios.delete(`${url}/itinerary/delete-itinerary/${id}`, options);
 
     //remove itinerary from array
     setItineraries((prev) => {

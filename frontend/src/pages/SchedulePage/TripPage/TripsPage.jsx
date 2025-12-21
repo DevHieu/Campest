@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import useDidMount from "../../../hooks/useDidMount";
 import useDebounce from "../../../hooks/useDebounce";
 import ReactDOMServer from "react-dom/server";
@@ -7,12 +7,14 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import H from "@here/maps-api-for-javascript";
 import { useAuth } from "../../../context/AuthProvider";
-import SearchBoxHere from "../../../components/SearchBoxHere";
+import SearchMap from "../../../components/SearchMap";
 import styles from "./TripPage.module.css";
+import { APIProvider, Map, AdvancedMarker } from "@vis.gl/react-google-maps";
 
 import { ChromePicker } from "react-color";
 import ItineraryItem from "../../../components/ItineraryItem";
 import MapMarker from "../../../components/MapMarker";
+import PlaceDetails from "../../../components/PlaceDetails";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
@@ -25,12 +27,10 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 dayjs.extend(customParseFormat);
 
 const TripPage = () => {
-  const url = import.meta.env.VITE_BACKEND_API;
   const { cookies, logout } = useAuth();
-  const HERE_MAP_API_KEY = "Xx4O2iANfrM2MISRYhmxQMzFRsOExmgs7ygOm8N1DPo";
-
-  const mapRef = useRef(null);
-  const mapInstanceRef = useRef(null);
+  const url = import.meta.env.VITE_BACKEND_API;
+  const GOOGLE_MAP_API_KEY = import.meta.env.VITE_GOOGLE_PLACE_API_KEY;
+  const GOOGLE_MAP_ID = import.meta.env.VITE_GOOGLE_MAP_ID;
 
   const { id } = useParams();
   const [loading, isLoading] = useState(true);
@@ -42,11 +42,23 @@ const TripPage = () => {
   const [latitude, setLatitude] = useState();
   const [longitude, setLongitude] = useState();
   const [itinerary, setItinerary] = useState([]);
-  const [platform, setPlatform] = useState(null);
   const [showPicker, setShowPicker] = useState(false);
   const [markersArray, setMarkersArray] = useState([]);
+  const [placeDetail, setPlaceDetail] = useState(null);
+  const [showDetail, setShowDetail] = useState(false);
+
+  const [cameraProps, setCameraProps] = useState(null);
+  const handleCameraChange = useCallback((ev) => {
+    setCameraProps(ev.detail);
+  });
 
   const debounceNote = useDebounce(notes, 500);
+
+  const options = {
+    headers: {
+      Authorization: `Bearer ${cookies.token}`,
+    },
+  };
 
   const markerIcon = (index) => {
     const markerHTML = ReactDOMServer.renderToStaticMarkup(
@@ -60,41 +72,45 @@ const TripPage = () => {
     return icon;
   };
 
-  const moveToMarker = (lat, lng) => {
-    console.log("click");
-    if (mapInstanceRef.current) {
-      const point = new H.geo.Point(lat, lng);
-      mapInstanceRef.current.getViewModel().setLookAtData(
-        { position: point, zoom: 12 },
-        true // animation enable
-      );
-    } else {
-      console.warn("Map chưa sẵn sàng!");
+  const moveToMarker = (lat, lng, index) => {
+    setCameraProps({
+      center: { lat: lat, lng: lng },
+      zoom: 12,
+    });
+
+    if (index !== -1) {
+      console.log(index);
+      console.log(itinerary[index].place_id);
+      handlePlaceSelected({
+        placeId: itinerary[index].place_id,
+        lat: null,
+        lng: null,
+      });
     }
   };
 
-  const addMarkerAndInfo = ({ position, title }) => {
+  const addMarkerAndInfo = async ({ place }) => {
+    const data = place;
+
+    if (typeof place === "string") {
+      data = await handlePlaceSelected(place);
+    }
+
+    console.log(data);
+
     const randomKey = nanoid(); //create random id for itinerary
-    //Add itinerary to array
+    // Add itinerary to array
     const newIti = {
       id: randomKey,
-      name: title,
+      place_id: data.place_id,
+      name: data.name,
       notes: "",
-      latitude: position.lat,
-      longitude: position.lng,
+      latitude: data.geometry.location.lat,
+      longitude: data.geometry.location.lng,
     };
     setItinerary((prev) => [...prev, newIti]);
 
-    const point = new H.geo.Point(position.lat, position.lng);
-    const icon = markerIcon(itinerary.length);
-    const marker = new H.map.DomMarker(point, { icon: icon });
-
-    marker.setData(title);
-    mapInstanceRef.current.addObject(marker);
-    mapInstanceRef.current.getViewModel().setLookAtData(
-      { position: point, zoom: 12 },
-      true // animation enable
-    );
+    const marker = markerIcon(itinerary.length);
     setMarkersArray((prev) => [...prev, marker]);
   };
 
@@ -108,25 +124,37 @@ const TripPage = () => {
         markers[swapNumber],
         markers[index],
       ];
-      markers[index].setIcon(markerIcon(index));
-      markers[swapNumber].setIcon(markerIcon(swapNumber));
 
       return markers;
     });
   };
 
   const deleteMarker = (index) => {
+    console.log("deleteign");
     setMarkersArray((prev) => {
-      const deleteValue = [...prev];
-      mapInstanceRef.current.removeObject(deleteValue[index]);
-      deleteValue.splice(index, 1);
-
-      for (let i = index; i < deleteValue.length; i++) {
-        deleteValue[i].setIcon(markerIcon(i));
-      }
-
-      return deleteValue;
+      console.log(prev);
+      return prev.filter((_, i) => {
+        console.log(i, index);
+        return i !== index;
+      });
     });
+  };
+
+  const handlePlaceSelected = async ({ placeId, lat, lng }) => {
+    console.log(placeId);
+    setPlaceDetail(placeId);
+    setShowDetail(true);
+
+    if (lat && lng) {
+      moveToMarker(lat, lng, -1);
+    }
+  };
+
+  const handleMapClick = (e) => {
+    if (e.detail.placeId) {
+      e.stop(); // ngăn map xử lý click mặc định
+      handlePlaceSelected(e.detail.placeId);
+    }
   };
 
   //Get trip data
@@ -135,14 +163,8 @@ const TripPage = () => {
       logout();
     }
 
-    const options = {
-      headers: {
-        Authorization: `Bearer ${cookies.token}`,
-      },
-    };
-
     axios
-      .get(`${url}/get-itinerary/${id}`, options)
+      .get(`${url}/itinerary/get-itinerary/${id}`, options)
       .then((res) => {
         setTripName(res.data.name);
         setStartDate(res.data.startDate);
@@ -155,53 +177,6 @@ const TripPage = () => {
       })
       .then(() => isLoading(false));
   }, []);
-
-  //handle Map api
-  useEffect(() => {
-    if (loading || !latitude || !longitude) return;
-
-    const platformInstance = new window.H.service.Platform({
-      apikey: HERE_MAP_API_KEY,
-    });
-    setPlatform(platformInstance);
-
-    const defaultLayers = platformInstance.createDefaultLayers();
-
-    const map = new window.H.Map(
-      mapRef.current,
-      defaultLayers.vector.normal.map,
-      {
-        center: { lat: latitude, lng: longitude },
-        zoom: 10,
-        pixelRatio: window.devicePixelRatio || 1,
-      }
-    );
-
-    mapInstanceRef.current = map;
-
-    window.addEventListener("resize", () => map.getViewPort().resize());
-    const behavior = new window.H.mapevents.Behavior(
-      new window.H.mapevents.MapEvents(map)
-    );
-    const ui = window.H.ui.UI.createDefault(map, defaultLayers);
-
-    if (mapRef.current) {
-      itinerary.forEach((value, index) => {
-        const icon = markerIcon(index);
-        const marker = new H.map.DomMarker(
-          { lat: parseFloat(value.latitude), lng: parseFloat(value.longitude) },
-          { icon }
-        );
-
-        console.log(marker instanceof H.map.DomMarker);
-
-        map.addObject(marker);
-        setMarkersArray((prev) => [...prev, marker]);
-      });
-    }
-
-    return () => map.dispose();
-  }, [loading, latitude, longitude]);
 
   //update marker's color when color change
   useEffect(() => {
@@ -218,12 +193,8 @@ const TripPage = () => {
       detail: itinerary,
     };
     console.log("updateting detail");
-    const options = {
-      headers: {
-        Authorization: `Bearer ${cookies.token}`,
-      },
-    };
-    axios.put(`${url}/update-itinerary-detail`, data, options);
+
+    axios.put(`${url}/itinerary/update-itinerary-detail`, data, options);
   }, [itinerary]);
 
   //update itinerary info
@@ -238,13 +209,7 @@ const TripPage = () => {
       color: color,
     };
 
-    const options = {
-      headers: {
-        Authorization: `Bearer ${cookies.token}`,
-      },
-    };
-
-    axios.put(`${url}/update-itinerary-info`, data, options);
+    axios.put(`${url}/itinerary/update-itinerary-info`, data, options);
   }, [tripName, startDate, endDate, debounceNote, color]);
 
   if (loading) {
@@ -385,24 +350,73 @@ const TripPage = () => {
             })}
           </div>
           <div id="search-container" className={styles.search_box} />
-          <SearchBoxHere
-            platform={platform}
-            onPlaceSelected={addMarkerAndInfo}
-            latitude={latitude}
-            longitude={longitude}
+          <SearchMap
+            onPlaceSelected={handlePlaceSelected}
+            lat={latitude}
+            lng={longitude}
           />
         </div>
       </div>
       <div className={styles.map}>
         <div
-          ref={mapRef}
           style={{
             width: "100%",
             height: "100%",
             background: "#eee",
             position: "relative",
           }}
-        ></div>
+        >
+          <APIProvider
+            apiKey={GOOGLE_MAP_API_KEY}
+            onLoad={() => console.log("Maps API has loaded.")}
+          >
+            <Map
+              {...cameraProps}
+              mapId={GOOGLE_MAP_ID}
+              defaultCenter={{ lat: latitude, lng: longitude }}
+              defaultZoom={10}
+              onCameraChanged={handleCameraChange}
+              onClick={handleMapClick}
+              gestureHandling="greedy"
+              options={{
+                clickableIcons: true,
+              }}
+            >
+              {itinerary.map((value, index) => (
+                <AdvancedMarker
+                  key={value.id}
+                  position={{
+                    lat: parseFloat(value.latitude),
+                    lng: parseFloat(value.longitude),
+                  }}
+                >
+                  <MapMarker index={index} color={color} />
+                </AdvancedMarker>
+              ))}
+            </Map>
+          </APIProvider>
+        </div>
+
+        {showDetail && (
+          <div className={styles.details}>
+            <button
+              onClick={() => {
+                setShowDetail(false);
+              }}
+            >
+              x
+            </button>
+            <PlaceDetails
+              placeId={placeDetail}
+              addToItinerary={addMarkerAndInfo}
+              deleteMarker={deleteMarker}
+              setItinerary={setItinerary}
+              addedIndex={itinerary.findIndex(
+                (item) => item.place_id === placeDetail
+              )}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

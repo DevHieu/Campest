@@ -70,7 +70,7 @@ function ItineraryItem({
       <div className={styles.content}>
         <button
           onClick={() => {
-            findMarker(parseFloat(lat), parseFloat(lng));
+            findMarker(parseFloat(lat), parseFloat(lng), index);
           }}
         >
           {name}

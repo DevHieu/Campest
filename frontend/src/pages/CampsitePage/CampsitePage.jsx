@@ -109,7 +109,7 @@ export default function CampsitePage() {
                 key={value.place_id}
                 placeId={value.place_id}
                 title={value.name}
-                img={value.photos[0].photo_reference}
+                img={value?.photos?.[0]?.photo_reference || ""}
                 rating={value.rating}
                 address={value.formatted_address}
                 handleSelect={handleSelect}
@@ -127,8 +127,12 @@ export default function CampsitePage() {
           <div className={styles.container}>
             <div className={styles.header}>
               <img
-                src={`https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${placeSelected.photos[0].photo_reference}&key=${apiKey}`}
-                alt={placeSelected.name}
+                src={
+                  placeSelected?.photos?.[0]?.photo_reference
+                    ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${placeSelected.photos[0].photo_reference}&key=${apiKey}`
+                    : ""
+                }
+                alt={placeSelected?.name || "No name"}
               />
               <div className={styles.info}>
                 <h1>{placeSelected.name}</h1>
@@ -192,7 +196,7 @@ export default function CampsitePage() {
             <hr />
             <div className={styles.reviews}>
               <h2>Đánh giá</h2>
-              {placeSelected.reviews.length > 0 &&
+              {placeSelected?.reviews?.length > 0 &&
                 placeSelected.reviews.map((value, index) => (
                   <div key={index} className={styles.review_item}>
                     <CommentItem comment={value} />

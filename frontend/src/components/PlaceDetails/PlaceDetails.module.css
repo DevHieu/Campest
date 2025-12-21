@@ -1,0 +1,88 @@
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.tabs_header {
+  flex-shrink: 0;
+}
+
+.tab_wrapper {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1em;
+}
+
+.detail_tab,
+.review_tab {
+  padding-bottom: 10px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.place_name {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.address {
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.opening_hours {
+  margin-top: 12px;
+}
+
+.review_item {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.review_header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.review_text {
+  font-size: 14px;
+  color: #444;
+}
+
+.header_row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.add_btn {
+  padding: 6px 14px;
+  margin-bottom: 10px;
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  background: white;
+  color: var(--marker);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add_btn:hover {
+  background: #f5f5f5;
+}
+
+.added {
+  background: #f0f7ff;
+  border-color: var(--marker);
+  color: var(--primary-green);
+}
