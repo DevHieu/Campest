@@ -34,11 +34,26 @@ public class GooglePlaceService {
         .block();
   }
 
+  public Map<String, Object> textSearch(String query) {
+    return webClient.get()
+        .uri(uriBuilder -> uriBuilder
+            .path("/textsearch/json")
+            .queryParam("query", query)
+            .queryParam("language", "vi")
+            .queryParam("key", apiKey)
+            .build())
+        .retrieve()
+        .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+        })
+        .block();
+  }
+
   public Map<String, Object> textSearch(String query, double lat, double lng) {
     return webClient.get()
         .uri(uriBuilder -> uriBuilder
             .path("/textsearch/json")
             .queryParam("query", query)
+            .queryParam("language", "vi")
             .queryParam("location", lat + "," + lng)
             .queryParam("radius", 5000)
             .queryParam("key", apiKey)
@@ -54,6 +69,7 @@ public class GooglePlaceService {
         .uri(uriBuilder -> uriBuilder
             .path("/details/json")
             .queryParam("place_id", placeId)
+            .queryParam("language", "vi")
             .queryParam("key", apiKey)
             .build())
         .retrieve()
