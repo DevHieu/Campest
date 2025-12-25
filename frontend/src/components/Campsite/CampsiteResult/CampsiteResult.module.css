@@ -7,6 +7,8 @@
   cursor: pointer;
   font-family: "Merienda", sans-serif;
   color: black;
+  border: none;
+  border-bottom: 0.5px solid darkgray;
   .image {
     width: 10em;
     height: 10em;

@@ -3,6 +3,7 @@ import DOMPurify from "dompurify";
 import axios from "axios";
 import styles from "./SurvivalPage.module.css";
 import { Link } from "react-router-dom";
+import Loading from "../../components/Loading";
 
 export default function SchedulePage() {
   const [data, setData] = useState([]);
@@ -21,7 +22,11 @@ export default function SchedulePage() {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="loading_wrapper">
+        <Loading />
+      </div>
+    );
   }
   return (
     <div className={styles.wrapper}>

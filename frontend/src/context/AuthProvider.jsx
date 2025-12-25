@@ -20,6 +20,7 @@ export const AuthProvider = ({ children }) => {
       axios
         .get(import.meta.env.VITE_BACKEND_API + "/get-user", options)
         .then((response) => {
+          console.log(response.data);
           setUser(response.data);
           setUserLoading(false);
         })

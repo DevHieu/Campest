@@ -6,6 +6,7 @@ import axios from "axios";
 
 import styles from "./Schedule.module.css";
 import TripItem from "../../components/TripItem";
+import Loading from "../../components/Loading";
 import { TextField, Button, Autocomplete } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -153,7 +154,11 @@ export default function SchedulePage() {
   };
 
   if (loading) {
-    return <div>Loading</div>;
+    return (
+      <div className="loading_wrapper">
+        <Loading />
+      </div>
+    );
   }
 
   return (

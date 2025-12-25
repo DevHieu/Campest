@@ -28,7 +28,7 @@ export default function Navbar() {
           <Link to="/campsite" className={styles.nav_list_items}>
             Tìm bãi cắm trại
           </Link>
-          <Link to="/schedule" className={styles.nav_list_items}>
+          <Link to="/tools" className={styles.nav_list_items}>
             Tìm đồ cắm trại
           </Link>
           <Link to="/schedule" className={styles.nav_list_items}>

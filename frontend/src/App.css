@@ -35,3 +35,11 @@
     --buttonColor: #d0d0b4;
   }
 }
+
+.loading_wrapper {
+  display: flex;
+  flex-direction: column;
+  height: var(--body-height);
+  justify-content: center;
+  align-items: center;
+}

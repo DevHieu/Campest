@@ -4,7 +4,7 @@ import useDebounce from "../../hooks/useDebounce";
 import { useAuth } from "../../context/AuthProvider";
 import axios from "axios";
 
-const SearchMap = ({ onPlaceSelected, lat, lng }) => {
+const SearchInput = ({ onPlaceSelected, lat, lng }) => {
   const wrapperRef = useRef(null);
   const url = import.meta.env.VITE_BACKEND_API;
   const { cookies, logout } = useAuth();
