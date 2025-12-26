@@ -1,18 +1,23 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import waiting_img from "../../assets/images/campsite_waiting.png";
 import styles from "./CampsitePage.module.css";
-import { Button, TextField } from "@mui/material";
 
+import { Button, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+
 import CampsiteResult from "../../components/Campsite/CampsiteResult";
 import CampsiteDetail from "../../components/Campsite/CampsiteDetail";
 import Loading from "../../components/Loading";
+import Modal from "../../components/Campsite/AddToItineraryModal";
 
 import {
   searchCampsite,
   getCampsiteDetail,
   getSavedCampsites,
+  addCampsiteToItinerary,
 } from "../../services/campsiteService";
 import { useAuth } from "../../context/AuthProvider";
 
@@ -26,6 +31,12 @@ export default function CampsitePage() {
   const [detailLoading, setDetailLoading] = useState(false);
   const [menu, setMenu] = useState("search");
   const [saved, setSaved] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [notify, setNotify] = useState({
+    open: false,
+    message: "",
+    severity: "success", // success | error
+  });
 
   const isSaved = saved.some(
     (item) => item.placeId === placeSelected?.place_id
@@ -73,6 +84,34 @@ export default function CampsitePage() {
 
     fetchSaved();
   }, [user]);
+
+  const handleSelectItinerary = async (itineraryId) => {
+    try {
+      const place = {
+        place_id: placeSelected.place_id,
+        name: placeSelected.name,
+        notes: "",
+        latitude: placeSelected.geometry.location.lat,
+        longitude: placeSelected.geometry.location.lng,
+      };
+
+      await addCampsiteToItinerary(itineraryId, place);
+
+      setNotify({
+        open: true,
+        message: "Đã thêm vào lộ trình thành công",
+        severity: "success",
+      });
+    } catch (err) {
+      setNotify({
+        open: true,
+        message: "Thêm vào lộ trình thất bại",
+        severity: "error",
+      });
+    } finally {
+      setModalOpen(false);
+    }
+  };
 
   return (
     <div className={styles.wrapper}>
@@ -172,9 +211,31 @@ export default function CampsitePage() {
             apiKey={apiKey}
             isSaved={isSaved}
             setSavedList={setSaved}
+            addToItinerary={() => setModalOpen(true)}
           />
         )}
       </div>
+      <Modal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSelect={handleSelectItinerary}
+        userId={user?.id}
+      />
+
+      <Snackbar
+        open={notify.open}
+        autoHideDuration={3000}
+        onClose={() => setNotify({ ...notify, open: false })}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setNotify({ ...notify, open: false })}
+          severity={notify.severity}
+          variant="filled"
+        >
+          {notify.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

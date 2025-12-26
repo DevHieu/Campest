@@ -7,14 +7,14 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import H from "@here/maps-api-for-javascript";
 import { useAuth } from "../../../context/AuthProvider";
-import SearchMap from "../../../components/SearchMap";
+import SearchMap from "../../../components/Maps/SearchMap";
 import styles from "./TripPage.module.css";
 import { APIProvider, Map, AdvancedMarker } from "@vis.gl/react-google-maps";
 
 import { ChromePicker } from "react-color";
-import ItineraryItem from "../../../components/ItineraryItem";
-import MapMarker from "../../../components/MapMarker";
-import PlaceDetails from "../../../components/PlaceDetails";
+import ItineraryItem from "../../../components/Itinerary/ItineraryItem";
+import MapMarker from "../../../components/Maps/MapMarker";
+import PlaceDetails from "../../../components/Itinerary/PlaceDetails";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
@@ -90,7 +90,7 @@ const TripPage = () => {
   };
 
   const addMarkerAndInfo = async ({ place }) => {
-    const data = place;
+    let data = place;
 
     if (typeof place === "string") {
       data = await handlePlaceSelected(place);

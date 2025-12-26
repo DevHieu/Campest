@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { nanoid, customAlphabet } from "nanoid";
 import { useAuth } from "../../context/AuthProvider";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { fetchSchedule } from "../../store/scheduleSlice";
 
 import styles from "./Schedule.module.css";
-import TripItem from "../../components/TripItem";
+import ScheduleItem from "../../components/ScheduleItem";
 import Loading from "../../components/Loading";
 import { TextField, Button, Autocomplete } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -18,6 +20,7 @@ import useDidMount from "../../hooks/useDidMount";
 export default function SchedulePage() {
   const url = import.meta.env.VITE_BACKEND_API;
   const COUNTRY_API_KEY = import.meta.env.VITE_COUNTRY_CITIES_API_KEY;
+  const dispatch = useDispatch();
 
   const [loading, isLoading] = useState(true);
   const [itineraries, setItineraries] = useState([]);
@@ -72,24 +75,22 @@ export default function SchedulePage() {
       .catch((error) => console.log("error", error));
   }, [country]);
 
-  //Get itineraries from db
   useEffect(() => {
-    if (user) {
-      const options = {
-        headers: {
-          Authorization: `Bearer ${cookies.token}`,
-        },
-      };
-      axios
-        .get(
-          `${url}/itinerary/get-user-itineraries/${user.id}?page=0&size=5`,
-          options
-        )
-        .then((res) => {
-          setItineraries(res.data.content);
-        });
-    }
-  }, [cookies.token, user]);
+    const fetchItineraries = async () => {
+      if (user) {
+        const res = await dispatch(
+          fetchSchedule({
+            userId: user.id,
+            page: 0,
+            size: 10,
+          })
+        );
+        setItineraries(res.payload.content);
+      }
+    };
+
+    fetchItineraries();
+  }, [user]);
 
   const getCoordinate = async () => {
     console.log(state);
@@ -227,8 +228,8 @@ export default function SchedulePage() {
       <div className={styles.trips_list}>
         <h2>Những chuyến đi đã lên kế hoạch</h2>
         <div className={styles.itinerary_list}>
-          {itineraries.map((value, index) => (
-            <TripItem
+          {itineraries?.map((value, index) => (
+            <ScheduleItem
               key={value.id}
               id={value.id}
               index={index}

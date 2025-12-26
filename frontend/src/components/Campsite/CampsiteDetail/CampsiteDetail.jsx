@@ -4,6 +4,7 @@ import BookmarkIcon from "@mui/icons-material/Bookmark";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import LanguageIcon from "@mui/icons-material/Language";
+import RouteIcon from "@mui/icons-material/Route";
 
 import CommentItem from "../../CommentItem";
 import Loading from "../../Loading";
@@ -21,6 +22,7 @@ export default function CampsiteDetail({
   apiKey,
   isSaved,
   setSavedList,
+  addToItinerary,
 }) {
   const { user } = useAuth();
   const handleSavePlace = () => {
@@ -131,6 +133,14 @@ export default function CampsiteDetail({
           >
             <BookmarkIcon />
             <p>{isSaved ? "Đã lưu" : "Bỏ lưu"}</p>
+          </button>
+
+          <button
+            className={styles.actions_btn}
+            onClick={() => addToItinerary()}
+          >
+            <RouteIcon />
+            <p>Thêm vào lộ trình</p>
           </button>
         </div>
       </div>

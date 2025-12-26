@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import styles from "./PlaceDetails.module.css";
 import axios from "axios";
-import Loading from "../Loading";
+import Loading from "../../Loading/index.jsx";
 
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { Box } from "@mui/material";
-import { useAuth } from "../../context/AuthProvider";
+import { useAuth } from "../../../context/AuthProvider.jsx";
+import { getPlaceDetail } from "../../../services/itineraryService.js";
 
 export default function PlaceDetails({
   placeId,
@@ -26,17 +27,8 @@ export default function PlaceDetails({
     const fetchPlaceDetail = async () => {
       try {
         setIsLoading(true);
-
-        const options = {
-          headers: {
-            Authorization: `Bearer ${cookies.token}`,
-          },
-        };
-
-        const res = await axios.get(
-          `${url}/get-place-details/${placeId}`,
-          options
-        );
+        console.log(cookies.token);
+        const res = await getPlaceDetail(placeId);
 
         setData(res.data.result);
         console.log(res.data.result);

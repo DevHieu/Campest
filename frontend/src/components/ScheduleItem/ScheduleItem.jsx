@@ -8,11 +8,11 @@ import {
   Button,
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import styles from "./TripItem.module.css";
+import styles from "./ScheduleItem.module.css";
 import axios from "axios";
 import { useAuth } from "../../context/AuthProvider";
 
-function TripItem({ id, index, name, startDate, endDate, setItineraries }) {
+function ScheduleItem({ id, index, name, startDate, endDate, setItineraries }) {
   const url = import.meta.env.VITE_BACKEND_API;
   const { cookies } = useAuth();
   const [openConfirm, setOpenConfirm] = React.useState(false);
@@ -72,4 +72,4 @@ function TripItem({ id, index, name, startDate, endDate, setItineraries }) {
   );
 }
 
-export default TripItem;
+export default ScheduleItem;

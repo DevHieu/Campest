@@ -21,3 +21,10 @@ export const removeCampsite = (userId, placeId) => {
     `/campsite/remove-campsite?userId=${userId}&placeId=${placeId}`
   );
 };
+
+export const addCampsiteToItinerary = (itineraryId, place) => {
+  return axiosClient.post(
+    `/campsite/add-campsite-to-itinerary/${itineraryId}`,
+    place
+  );
+};

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import TextField from "@mui/material/TextField";
-import useDebounce from "../../hooks/useDebounce";
-import { useAuth } from "../../context/AuthProvider";
+import useDebounce from "../../../hooks/useDebounce";
+import { useAuth } from "../../../context/AuthProvider";
 import axios from "axios";
 
 const SearchInput = ({ onPlaceSelected, lat, lng }) => {
