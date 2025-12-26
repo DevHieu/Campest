@@ -28,7 +28,7 @@ import com.server.backend.utils.ApiResponse;
 
 @RestController
 @RequestMapping("/itinerary")
-public class ItineraryController_temp {
+public class ItineraryController {
 
   @Autowired
   private ItineraryService itineraryService;

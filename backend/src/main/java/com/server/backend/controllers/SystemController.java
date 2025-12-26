@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class SystemController_temp {
+public class SystemController {
 
   // Because i use free hosting, i need to keep the server alive by using cron-job
   @GetMapping("/keepalive")

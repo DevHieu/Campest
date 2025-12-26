@@ -17,7 +17,7 @@ import com.server.backend.services.JwtService;
 import com.server.backend.services.UserService;
 
 @RestController
-public class UserController_temp {
+public class UserController {
 
   @Autowired
   private UserService userService;
