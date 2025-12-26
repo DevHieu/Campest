@@ -8,10 +8,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.server.backend.dto.ItineraryDetail;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 
 @Document(collection = "Itineraries")
-@Getter
+@Data
 @AllArgsConstructor
 public class Itinerary {
   @Id

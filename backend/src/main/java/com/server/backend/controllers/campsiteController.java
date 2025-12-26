@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.server.backend.dto.ItineraryDetail;
 import com.server.backend.models.entities.CampsiteSaved;
 import com.server.backend.services.CampsiteService;
+import com.server.backend.utils.ApiResponse;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -47,4 +50,14 @@ public class campsiteController {
   public ResponseEntity<Map<String, Object>> removeCampsite(@RequestParam String userId, @RequestParam String placeId) {
     return campsiteService.removeCampsite(userId, placeId);
   }
+
+  @PostMapping("/add-campsite-to-itinerary/{itineraryId}")
+  public ResponseEntity<ApiResponse<Void>> postMethodName(@PathVariable String itineraryId,
+      @RequestBody ItineraryDetail place) {
+    campsiteService.addCampsiteToItinerary(itineraryId, place);
+
+    return ResponseEntity.ok(
+        new ApiResponse<>(true, "Campsite added to itinerary successfully", null));
+  }
+
 }

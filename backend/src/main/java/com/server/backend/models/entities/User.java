@@ -8,14 +8,12 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.mongodb.lang.NonNull;
 import com.server.backend.models.enums.UserEnum;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 @Document(collection = "users")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @RequiredArgsConstructor
 public class User {

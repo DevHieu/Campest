@@ -1,5 +1,6 @@
 package com.server.backend.services;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,8 +10,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.server.backend.dto.ItineraryDetail;
 import com.server.backend.models.entities.CampsiteSaved;
+import com.server.backend.models.entities.Itinerary;
 import com.server.backend.repositories.CampsiteSavedRepository;
+import com.server.backend.repositories.ItineraryRepository;
 
 @Service
 public class CampsiteService {
@@ -20,6 +24,9 @@ public class CampsiteService {
 
   @Autowired
   private CampsiteSavedRepository campsiteSavedRepo;
+
+  @Autowired
+  private ItineraryRepository itineraryRepo;
 
   private ResponseEntity<Map<String, Object>> handleGoogleApiResponse(String status, List<Map<String, Object>> results,
       Map<String, Object> rawResponse) {
@@ -140,5 +147,20 @@ public class CampsiteService {
       response.put("message", "Get campsite save list failed");
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
+  }
+
+  public void addCampsiteToItinerary(String itineraryId, ItineraryDetail place) {
+    Itinerary itinerary = itineraryRepo
+        .findById(itineraryId)
+        .orElseThrow(() -> new RuntimeException("Itinerary not found"));
+
+    ArrayList<ItineraryDetail> campsites = itinerary.getDetail();
+    if (campsites == null) {
+      campsites = new ArrayList<ItineraryDetail>();
+      itinerary.setDetail(campsites);
+    }
+
+    campsites.add(place);
+    itineraryRepo.save(itinerary);
   }
 }

@@ -70,8 +70,8 @@ public class itineraryController {
     return itineraryService.searchPlaces(search, lat, lng);
   }
 
-  @GetMapping("/get-place-detail")
-  public Map<String, Object> getPlaceDetails(@RequestParam String placeId) {
+  @GetMapping("/get-place-details/{placeId}")
+  public Map<String, Object> getPlaceDetails(@PathVariable String placeId) {
     return itineraryService.getPlaceDetails(placeId);
   }
 
