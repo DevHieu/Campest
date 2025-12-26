@@ -24,46 +24,39 @@ public class UserService {
   private UserRepository userRepository;
 
   @Autowired
-  AuthenticationManager authManager;
+  private AuthenticationManager authManager;
 
   @Autowired
   private JwtService jwtService;
 
   private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
-  public ResponseEntity<Map<String, Object>> signIn(LoginRequest loginRequest) {
-    Map<String, Object> response = new HashMap<>();
+  public String signIn(LoginRequest loginRequest) {
+    Authentication authentication = authManager.authenticate(
+        new UsernamePasswordAuthenticationToken(
+            loginRequest.getEmail(),
+            loginRequest.getPassword()));
 
-    Authentication authentication = authManager
-        .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
-
-    if (authentication.isAuthenticated()) {
-      response.put("message", "login successfully");
-      response.put("status", 200); // 200 OK
-      response.put("token", jwtService.generateToken(loginRequest.getEmail()));
-      return ResponseEntity.status(HttpStatus.OK).body(response);
-    } else {
-      response.put("message", "Invalid username or password");
-      response.put("status", 401); // 401 Unauthorized
-
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    if (!authentication.isAuthenticated()) {
+      throw new RuntimeException("Invalid username or password");
     }
+
+    return jwtService.generateToken(loginRequest.getEmail());
   }
 
-  public ResponseEntity<Map<String, Object>> register(User user) {
-    Map<String, Object> response = new HashMap<>();
+  public String register(User user) {
     if (userRepository.existsByEmail(user.getEmail())) {
-      response.put("message", "email has already exists");
-      response.put("status", 303); // HTTP 303 See Other
-      return ResponseEntity.status(HttpStatus.SEE_OTHER).body(response);
-    } else {
-      user.setPassword(encoder.encode(user.getPassword()));
-      user.setRole(UserEnum.USER);
-      userRepository.save(user);
-      response.put("message", "User registered successfully!");
-      response.put("status", 201); // HTTP 201 Created
-      response.put("token", jwtService.generateToken(user.getEmail()));
-      return ResponseEntity.status(HttpStatus.CREATED).body(response);
+      throw new RuntimeException("Email already exists");
     }
+
+    user.setPassword(encoder.encode(user.getPassword()));
+    user.setRole(UserEnum.USER);
+    userRepository.save(user);
+
+    return jwtService.generateToken(user.getEmail());
+  }
+
+  public User getUserByEmail(String email) {
+    return userRepository.findByEmail(email);
   }
 }

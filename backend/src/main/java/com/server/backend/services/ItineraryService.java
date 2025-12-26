@@ -1,6 +1,5 @@
 package com.server.backend.services;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,8 +11,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.server.backend.dto.ItinerarySummary;
@@ -36,11 +33,19 @@ public class ItineraryService {
 
   public Itinerary getItinerary(String id) {
     return itineraryRepository.findById(id)
-        .orElse(null);
+        .orElseThrow(() -> new RuntimeException("Itinerary not found"));
   }
 
   public Page<ItinerarySummary> getUserItineraries(String userId, Pageable pageable) {
-    Query query = new Query(Criteria.where("userId").is(userId));
+
+    // 1️⃣ Query theo userId
+    Query query = new Query(
+        Criteria.where("userId").is(userId));
+
+    // 2️⃣ Sort + skip + limit (pagination chuẩn)
+    query.with(pageable);
+
+    // 3️⃣ Chỉ lấy field cần thiết
     query.fields()
         .include("id")
         .include("place_id")
@@ -48,38 +53,35 @@ public class ItineraryService {
         .include("startDate")
         .include("endDate");
 
+    // 4️⃣ Lấy data
     List<ItinerarySummary> results = mongoTemplate.find(query, ItinerarySummary.class, "Itineraries");
-    long total = mongoTemplate.count(new Query(), "Itineraries"); // ← đếm tổng document (không phân trang)
 
-    return new PageImpl<ItinerarySummary>(results, pageable, total);
+    // 5️⃣ Count đúng điều kiện (KHÔNG phân trang)
+    Query countQuery = new Query(
+        Criteria.where("userId").is(userId));
+    long total = mongoTemplate.count(countQuery, "Itineraries");
+
+    return new PageImpl<>(results, pageable, total);
   }
 
-  public ResponseEntity<Map<String, Object>> createItinerary(Itinerary itinerary) {
-    Map<String, Object> response = new HashMap<>();
+  public void createItinerary(Itinerary itinerary) {
     itineraryRepository.save(itinerary);
-    response.put("message", "create new itinerary successfully!");
-    response.put("status", 201); // HTTP 201 Created
-    return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
-  public void updateItineraryDetail(UpdateItineraryDetail updateItineraryDetail) {
-    Query query = new Query(Criteria.where("_id").is(updateItineraryDetail.getId()));
-
-    Update update = new Update();
-    update.set("detail", updateItineraryDetail.getDetail());
-
+  public void updateItineraryDetail(UpdateItineraryDetail dto) {
+    Query query = new Query(Criteria.where("_id").is(dto.getId()));
+    Update update = new Update().set("detail", dto.getDetail());
     mongoTemplate.updateFirst(query, update, Itinerary.class);
   }
 
-  public void updateItineraryInfo(UpdateItineraryInfo updateItineraryInfo) {
-    Query query = new Query(Criteria.where("_id").is(updateItineraryInfo.getId()));
-
-    Update update = new Update();
-    update.set("name", updateItineraryInfo.getName());
-    update.set("startDate", updateItineraryInfo.getStartDate());
-    update.set("endDate", updateItineraryInfo.getEndDate());
-    update.set("note", updateItineraryInfo.getNote());
-    update.set("color", updateItineraryInfo.getColor());
+  public void updateItineraryInfo(UpdateItineraryInfo dto) {
+    Query query = new Query(Criteria.where("_id").is(dto.getId()));
+    Update update = new Update()
+        .set("name", dto.getName())
+        .set("startDate", dto.getStartDate())
+        .set("endDate", dto.getEndDate())
+        .set("note", dto.getNote())
+        .set("color", dto.getColor());
 
     mongoTemplate.updateFirst(query, update, Itinerary.class);
   }

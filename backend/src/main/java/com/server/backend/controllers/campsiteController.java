@@ -1,8 +1,10 @@
 package com.server.backend.controllers;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,33 +29,57 @@ public class campsiteController {
   private CampsiteService campsiteService;
 
   @GetMapping("/find-campsite/{place}")
-  public ResponseEntity<Map<String, Object>> findCampsite(@PathVariable String place) {
-    return campsiteService.findCampsite(place);
+  public ResponseEntity<?> findCampsite(@PathVariable String place) {
+    Map<String, Object> result = campsiteService.findCampsite(place);
+    return ResponseEntity.ok(result);
   }
 
   @GetMapping("/get-place-details/{placeId}")
-  public ResponseEntity<Map<String, Object>> getPlaceDetails(@PathVariable String placeId) {
-    return campsiteService.placeDetails(placeId);
+  public ResponseEntity<?> getPlaceDetails(@PathVariable String placeId) {
+    return ResponseEntity.ok(campsiteService.placeDetails(placeId));
   }
 
   @GetMapping("/saved-campsites/{userId}")
-  public ResponseEntity<Map<String, Object>> getMethodName(@PathVariable String userId) {
-    return campsiteService.getSavedList(userId);
+  public ResponseEntity<ApiResponse<List<CampsiteSaved>>> getSaved(@PathVariable String userId) {
+    List<CampsiteSaved> data = campsiteService.getSavedList(userId);
+    return ResponseEntity.ok(
+        new ApiResponse<>(true, "Get saved campsites successfully", data));
   }
 
   @PostMapping("/save-campsite")
-  public ResponseEntity<Map<String, Object>> saveCampsite(@RequestBody CampsiteSaved entity) {
-    return campsiteService.saveCampsite(entity);
+  public ResponseEntity<ApiResponse<CampsiteSaved>> save(@RequestBody CampsiteSaved entity) {
+    try {
+      CampsiteSaved saved = campsiteService.saveCampsite(entity);
+      return ResponseEntity.status(HttpStatus.CREATED)
+          .body(new ApiResponse<>(true, "Save campsite successfully", saved));
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest()
+          .body(new ApiResponse<>(false, e.getMessage(), null));
+    } catch (IllegalStateException e) {
+      return ResponseEntity.status(HttpStatus.CONFLICT)
+          .body(new ApiResponse<>(false, e.getMessage(), null));
+    }
   }
 
   @DeleteMapping("/remove-campsite")
-  public ResponseEntity<Map<String, Object>> removeCampsite(@RequestParam String userId, @RequestParam String placeId) {
-    return campsiteService.removeCampsite(userId, placeId);
+  public ResponseEntity<ApiResponse<Void>> remove(
+      @RequestParam String userId,
+      @RequestParam String placeId) {
+    try {
+      campsiteService.removeCampsite(userId, placeId);
+      return ResponseEntity.ok(
+          new ApiResponse<>(true, "Remove campsite successfully", null));
+    } catch (RuntimeException e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .body(new ApiResponse<>(false, e.getMessage(), null));
+    }
   }
 
   @PostMapping("/add-campsite-to-itinerary/{itineraryId}")
-  public ResponseEntity<ApiResponse<Void>> postMethodName(@PathVariable String itineraryId,
+  public ResponseEntity<ApiResponse<Void>> addToItinerary(
+      @PathVariable String itineraryId,
       @RequestBody ItineraryDetail place) {
+
     campsiteService.addCampsiteToItinerary(itineraryId, place);
 
     return ResponseEntity.ok(

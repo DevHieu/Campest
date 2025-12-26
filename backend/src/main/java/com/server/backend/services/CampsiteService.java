@@ -1,13 +1,10 @@
 package com.server.backend.services;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.server.backend.dto.ItineraryDetail;
@@ -28,125 +25,37 @@ public class CampsiteService {
   @Autowired
   private ItineraryRepository itineraryRepo;
 
-  private ResponseEntity<Map<String, Object>> handleGoogleApiResponse(String status, List<Map<String, Object>> results,
-      Map<String, Object> rawResponse) {
-    switch (status) {
-      case "OK":
-        if (results == null || results.isEmpty()) {
-          return ResponseEntity.ok(
-              Map.of(
-                  "message", "Không tìm thấy campsite ở khu vực này",
-                  "results", List.of()));
-        }
-        return ResponseEntity.ok(rawResponse);
-
-      case "ZERO_RESULTS":
-        Map<String, Object> noResult = Map.of(
-            "message", "Không tìm thấy campsite nào ở khu vực bạn chọn",
-            "suggestions", List.of(
-                "Thử tìm kiếm với từ khóa khác",
-                "Kiểm tra chính tả",
-                "Thử tìm kiếm khu vực lân cận"));
-        return ResponseEntity.ok(noResult);
-
-      case "INVALID_REQUEST":
-        return ResponseEntity.badRequest()
-            .body(Map.of("error", "Yêu cầu không hợp lệ"));
-
-      case "OVER_QUERY_LIMIT":
-        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-            .body(Map.of("error", "Đã vượt quá giới hạn truy vấn"));
-
-      default:
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(Map.of("error", "Lỗi từ Google API: " + status));
-    }
-  }
-
-  public ResponseEntity<Map<String, Object>> findCampsite(String place) {
+  public Map<String, Object> findCampsite(String place) {
     String query = "campsite+in+" + place;
-    Map<String, Object> mapResult = googlePlaceService.textSearch(query);
-
-    String status = (String) mapResult.get("status");
-    @SuppressWarnings("unchecked")
-    List<Map<String, Object>> results = (List<Map<String, Object>>) mapResult.get("results");
-
-    // Check Google API status
-    return handleGoogleApiResponse(status, results, mapResult);
+    return googlePlaceService.textSearch(query);
   }
 
-  public ResponseEntity<Map<String, Object>> placeDetails(String placeId) {
-    Map<String, Object> placeDetails = googlePlaceService.getPlaceDetails(placeId);
-    return ResponseEntity.ok(placeDetails);
+  public Map<String, Object> placeDetails(String placeId) {
+    return googlePlaceService.getPlaceDetails(placeId);
   }
 
-  public ResponseEntity<Map<String, Object>> saveCampsite(CampsiteSaved entity) {
-    Map<String, Object> response = new HashMap<>();
+  public List<CampsiteSaved> getSavedList(String userId) {
+    return campsiteSavedRepo.findByUserId(userId);
+  }
 
-    try {
-      if (entity == null || entity.getPlaceId() == null || entity.getUserId() == null) {
-        response.put("message", "Invalid data");
-        return ResponseEntity.badRequest().body(response);
-      }
-
-      if (campsiteSavedRepo.existsByUserIdAndPlaceId(
-          entity.getUserId(), entity.getPlaceId())) {
-
-        response.put("message", "Campsite already saved");
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-      }
-
-      CampsiteSaved saved = campsiteSavedRepo.save(entity);
-
-      response.put("message", "Save campsite successfully!");
-      response.put("data", saved);
-
-      return ResponseEntity.status(HttpStatus.CREATED).body(response);
-
-    } catch (Exception e) {
-      response.put("message", "Save campsite failed");
-      response.put("error", e.getMessage());
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+  public CampsiteSaved saveCampsite(CampsiteSaved entity) {
+    if (entity == null || entity.getPlaceId() == null || entity.getUserId() == null) {
+      throw new IllegalArgumentException("Invalid data");
     }
 
+    if (campsiteSavedRepo.existsByUserIdAndPlaceId(
+        entity.getUserId(), entity.getPlaceId())) {
+      throw new IllegalStateException("Campsite already saved");
+    }
+
+    return campsiteSavedRepo.save(entity);
   }
 
-  public ResponseEntity<Map<String, Object>> removeCampsite(String userId, String placeId) {
-    Map<String, Object> response = new HashMap<>();
-
-    try {
-      if (userId == null || placeId == null) {
-        response.put("message", "Invalid data");
-        return ResponseEntity.badRequest().body(response);
-      }
-
-      if (!campsiteSavedRepo.existsByUserIdAndPlaceId(userId, placeId)) {
-        response.put("message", "Campsite not found");
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-      }
-
-      campsiteSavedRepo.deleteByUserIdAndPlaceId(userId, placeId);
-
-      return ResponseEntity.noContent().build();
-
-    } catch (Exception e) {
-      response.put("message", "Remove campsite failed");
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+  public void removeCampsite(String userId, String placeId) {
+    if (!campsiteSavedRepo.existsByUserIdAndPlaceId(userId, placeId)) {
+      throw new RuntimeException("Campsite not found");
     }
-  }
-
-  public ResponseEntity<Map<String, Object>> getSavedList(String userId) {
-    Map<String, Object> response = new HashMap<>();
-
-    try {
-      List<CampsiteSaved> data = campsiteSavedRepo.findByUserId(userId);
-      response.put("data", data);
-      response.put("message", "Get campsite save list successfully");
-      return ResponseEntity.status(HttpStatus.OK).body(response);
-    } catch (Exception e) {
-      response.put("message", "Get campsite save list failed");
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-    }
+    campsiteSavedRepo.deleteByUserIdAndPlaceId(userId, placeId);
   }
 
   public void addCampsiteToItinerary(String itineraryId, ItineraryDetail place) {
@@ -154,13 +63,11 @@ public class CampsiteService {
         .findById(itineraryId)
         .orElseThrow(() -> new RuntimeException("Itinerary not found"));
 
-    ArrayList<ItineraryDetail> campsites = itinerary.getDetail();
-    if (campsites == null) {
-      campsites = new ArrayList<ItineraryDetail>();
-      itinerary.setDetail(campsites);
+    if (itinerary.getDetail() == null) {
+      itinerary.setDetail(new ArrayList<>());
     }
 
-    campsites.add(place);
+    itinerary.getDetail().add(place);
     itineraryRepo.save(itinerary);
   }
 }
