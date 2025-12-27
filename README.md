@@ -21,7 +21,7 @@ A website is built to help beginners who are starting to learn about camping eas
 - Register / login
 - Browse survival skills and basic camping guides
 - Plan your camping trip
-- Find campsites (fixing)
+- Find campsites
 - Find and buy camping gear (in progress)
 
 
