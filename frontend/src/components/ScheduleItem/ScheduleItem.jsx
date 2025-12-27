@@ -11,10 +11,9 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import styles from "./ScheduleItem.module.css";
 import axios from "axios";
 import { useAuth } from "../../context/AuthProvider";
+import { deleteItinerary } from "../../services/itineraryService";
 
 function ScheduleItem({ id, index, name, startDate, endDate, setItineraries }) {
-  const url = import.meta.env.VITE_BACKEND_API;
-  const { cookies } = useAuth();
   const [openConfirm, setOpenConfirm] = React.useState(false);
 
   const handleOpenConfirm = () => {
@@ -25,13 +24,8 @@ function ScheduleItem({ id, index, name, startDate, endDate, setItineraries }) {
     setOpenConfirm(false);
   };
 
-  const handleConfirmDelete = () => {
-    const options = {
-      headers: {
-        Authorization: `Bearer ${cookies.token}`, // Dùng token từ user
-      },
-    };
-    axios.delete(`${url}/itinerary/delete-itinerary/${id}`, options);
+  const handleConfirmDelete = async () => {
+    await deleteItinerary(id);
 
     //remove itinerary from array
     setItineraries((prev) => {

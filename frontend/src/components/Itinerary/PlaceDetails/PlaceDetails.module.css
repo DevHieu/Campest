@@ -64,9 +64,17 @@
   gap: 12px;
 }
 
-.add_btn {
-  padding: 6px 14px;
+.action_wrapper {
+  display: flex;
+  align-items: center;
   margin-bottom: 10px;
+  gap: 5px;
+}
+
+.action_btn {
+  display: flex;
+  align-items: center;
+  padding: 6px 14px;
   border-radius: 999px;
   border: 1px solid #ddd;
   background: white;

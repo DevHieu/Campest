@@ -23,17 +23,26 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import {
+  getItinerary,
+  updateItineraryDetail,
+  updateItineraryInfo,
+} from "../../../services/itineraryService";
+
+import CircularProgress from "@mui/material/CircularProgress";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ErrorIcon from "@mui/icons-material/Error";
 
 dayjs.extend(customParseFormat);
 
 const TripPage = () => {
-  const { cookies, logout } = useAuth();
-  const url = import.meta.env.VITE_BACKEND_API;
   const GOOGLE_MAP_API_KEY = import.meta.env.VITE_GOOGLE_PLACE_API_KEY;
   const GOOGLE_MAP_ID = import.meta.env.VITE_GOOGLE_MAP_ID;
 
   const { id } = useParams();
   const [loading, isLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState(false);
   const [color, setColor] = useState("");
   const [tripName, setTripName] = useState("Trip to");
   const [startDate, setStartDate] = useState("");
@@ -52,13 +61,12 @@ const TripPage = () => {
     setCameraProps(ev.detail);
   });
 
-  const debounceNote = useDebounce(notes, 500);
-
-  const options = {
-    headers: {
-      Authorization: `Bearer ${cookies.token}`,
-    },
+  const isSaving = (value) => {
+    setSaving(value);
+    if (value) setSaveError(false);
   };
+
+  const debounceNote = useDebounce(notes, 500);
 
   const markerIcon = (index) => {
     const markerHTML = ReactDOMServer.renderToStaticMarkup(
@@ -153,19 +161,20 @@ const TripPage = () => {
   const handleMapClick = (e) => {
     if (e.detail.placeId) {
       e.stop(); // ngăn map xử lý click mặc định
-      handlePlaceSelected(e.detail.placeId);
+
+      handlePlaceSelected({
+        placeId: e.detail.placeId,
+        lat: e.detail.latLng.lat,
+        lng: e.detail.latLng.lng,
+      });
     }
   };
 
   //Get trip data
   useEffect(() => {
-    if (!cookies.token) {
-      logout();
-    }
-
-    axios
-      .get(`${url}/itinerary/get-itinerary/${id}`, options)
-      .then((res) => {
+    const fetchData = async () => {
+      try {
+        const res = await getItinerary(id);
         setTripName(res.data.name);
         setStartDate(res.data.startDate);
         setEndDate(res.data.endDate);
@@ -174,8 +183,14 @@ const TripPage = () => {
         setLongitude(parseFloat(res.data.longitude));
         setItinerary(res.data.detail);
         setColor(res.data.color);
-      })
-      .then(() => isLoading(false));
+      } catch (error) {
+        console.log(error);
+      } finally {
+        isLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   //update marker's color when color change
@@ -188,28 +203,56 @@ const TripPage = () => {
 
   //update itinerary details
   useDidMount(() => {
-    const data = {
-      id: id,
-      detail: itinerary,
-    };
-    console.log("updateting detail");
+    const saveDetail = async () => {
+      if (itinerary.length === 0) return;
 
-    axios.put(`${url}/itinerary/update-itinerary-detail`, data, options);
+      try {
+        isSaving(true);
+
+        const data = {
+          id,
+          detail: itinerary,
+        };
+
+        await updateItineraryDetail(data); // ⬅️ đợi xong
+      } catch (e) {
+        console.error("Update itinerary detail failed", e);
+        setSaveError(true);
+      } finally {
+        isSaving(false);
+      }
+    };
+
+    saveDetail();
   }, [itinerary]);
 
   //update itinerary info
   useDidMount(() => {
-    console.log("updateting info");
-    const data = {
-      id: id,
-      name: tripName,
-      startDate: startDate,
-      endDate: endDate,
-      note: debounceNote,
-      color: color,
+    const saveInfo = async () => {
+      if (!id || !tripName || !startDate || !endDate) return;
+
+      try {
+        isSaving(true);
+
+        const data = {
+          id,
+          name: tripName,
+          startDate,
+          endDate,
+          note: debounceNote,
+          color,
+        };
+
+        await updateItineraryInfo(data);
+      } catch (e) {
+        console.error("Update itinerary info failed", e);
+        setSaveError(true);
+      } finally {
+        isSaving(false);
+      }
     };
 
-    axios.put(`${url}/itinerary/update-itinerary-info`, data, options);
+    saveInfo();
   }, [tripName, startDate, endDate, debounceNote, color]);
 
   if (loading) {
@@ -236,28 +279,51 @@ const TripPage = () => {
           >
             <EditIcon className={styles.picker_icon} />
           </IconButton>
-          <TextField
-            id="outlined-basic"
-            label=""
-            placeholder="Nhập tên chuyến đi của bạn"
-            variant="outlined"
-            defaultValue={tripName}
-            sx={{
-              "&": {
-                width: "60%",
-                margin: "2rem 4rem",
-              },
-              "& .MuiInputBase-root": {
+          <div className={styles.trip_name_wrapper}>
+            <TextField
+              placeholder="Nhập tên chuyến đi của bạn"
+              variant="outlined"
+              defaultValue={tripName}
+              sx={{
+                width: "100%",
                 backgroundColor: "white",
                 borderRadius: "8px",
-                fontWeight: "900",
-                fontSize: "30px",
-              },
-              "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: "gray",
-              },
-            }}
-          />
+                "& .MuiInputBase-root": {
+                  fontWeight: "900",
+                  fontSize: "30px",
+                },
+              }}
+            />
+
+            {(saving || saveError || !saving) && (
+              <div className={styles.trip_status}>
+                {saving && (
+                  <>
+                    <CircularProgress size={12} style={{ color: color }} />
+                    <span>Saving</span>
+                  </>
+                )}
+
+                {!saving && !saveError && (
+                  <>
+                    <CheckCircleIcon
+                      fontSize="small"
+                      style={{ color: color }}
+                    />
+                    <span>Saved</span>
+                  </>
+                )}
+
+                {saveError && (
+                  <>
+                    <ErrorIcon fontSize="small" style={{ color: color }} />
+                    <span>Failed</span>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+
           <div className={styles.choose_date}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
@@ -330,7 +396,7 @@ const TripPage = () => {
         <div className={styles.itinerary}>
           <h2>Hành trình</h2>
           <div className={styles.iti_list}>
-            {itinerary.map((value, index) => {
+            {itinerary?.map((value, index) => {
               return (
                 <ItineraryItem
                   key={value.id}
@@ -382,7 +448,7 @@ const TripPage = () => {
                 clickableIcons: true,
               }}
             >
-              {itinerary.map((value, index) => (
+              {itinerary?.map((value, index) => (
                 <AdvancedMarker
                   key={value.id}
                   position={{

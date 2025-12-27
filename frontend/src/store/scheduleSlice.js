@@ -5,8 +5,6 @@ export const fetchSchedule = createAsyncThunk(
   "schedule/fetch",
   async ({ userId, page, size }) => {
     const res = await getAllItineraries(userId, page, size);
-    console.log(res);
-    console.log(res.data);
     return res.data;
   }
 );

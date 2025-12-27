@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
         .get(import.meta.env.VITE_BACKEND_API + "/get-user", options)
         .then((response) => {
           console.log(response.data);
-          setUser(response.data);
+          setUser(response.data.data);
           setUserLoading(false);
         })
         .catch((error) => {

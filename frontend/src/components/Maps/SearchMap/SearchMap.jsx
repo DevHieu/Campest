@@ -3,6 +3,7 @@ import TextField from "@mui/material/TextField";
 import useDebounce from "../../../hooks/useDebounce";
 import { useAuth } from "../../../context/AuthProvider";
 import axios from "axios";
+import { searchPlace } from "../../../services/mapService";
 
 const SearchInput = ({ onPlaceSelected, lat, lng }) => {
   const wrapperRef = useRef(null);
@@ -13,21 +14,8 @@ const SearchInput = ({ onPlaceSelected, lat, lng }) => {
   const debouncedQuery = useDebounce(query, 500);
 
   const fetchSuggestions = async (query) => {
-    const options = {
-      headers: {
-        Authorization: `Bearer ${cookies.token}`,
-      },
-    };
-
-    axios
-      .get(
-        `${url}/itinerary/search-places?search=${query}&lat=${lat}&lng=${lng}`,
-        options
-      )
-      .then((res) => {
-        console.log(res);
-        setSuggestions(res.data.results);
-      });
+    const res = await searchPlace(query, lat, lng);
+    setSuggestions(res.data.results);
   };
 
   useEffect(() => {

@@ -132,7 +132,7 @@ export default function CampsiteDetail({
             onClick={isSaved ? handleRemovePlace : handleSavePlace}
           >
             <BookmarkIcon />
-            <p>{isSaved ? "Đã lưu" : "Bỏ lưu"}</p>
+            <p>{isSaved ? "Đã lưu" : "Lưu lại"}</p>
           </button>
 
           <button

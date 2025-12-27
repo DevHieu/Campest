@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import styles from "./PlaceDetails.module.css";
-import axios from "axios";
 import Loading from "../../Loading/index.jsx";
 
+import PlaceIcon from "@mui/icons-material/Place";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { Box } from "@mui/material";
@@ -16,22 +16,18 @@ export default function PlaceDetails({
   setItinerary,
   addedIndex,
 }) {
-  const url = import.meta.env.VITE_BACKEND_API;
   const [value, setValue] = useState(0);
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { cookies } = useAuth();
   const isAdded = addedIndex !== -1;
 
   useEffect(() => {
     const fetchPlaceDetail = async () => {
       try {
         setIsLoading(true);
-        console.log(cookies.token);
         const res = await getPlaceDetail(placeId);
 
         setData(res.data.result);
-        console.log(res.data.result);
       } catch (err) {
         console.error("Error get place detail:", err);
       } finally {
@@ -95,18 +91,33 @@ export default function PlaceDetails({
         <div className={styles.detail_tab}>
           <h2 className={styles.place_name}>{data.name}</h2>
 
-          <button
-            className={`${styles.add_btn} ${isAdded ? styles.added : ""}`}
-            onClick={() => {
-              if (isAdded) {
-                handleDelete(addedIndex);
-              } else {
-                addToItinerary({ place: data });
-              }
-            }}
-          >
-            {isAdded ? "✓ Added" : "+ Add"}
-          </button>
+          <div className={styles.action_wrapper}>
+            <button
+              className={`${styles.action_btn} ${isAdded ? styles.added : ""}`}
+              onClick={() => {
+                if (isAdded) {
+                  handleDelete(addedIndex);
+                } else {
+                  addToItinerary({ place: data });
+                }
+              }}
+            >
+              {isAdded ? "✓ Added" : "+ Add"}
+            </button>
+
+            <button
+              className={styles.action_btn}
+              onClick={() => {
+                window.open(
+                  `https://www.google.com/maps/place/?q=place_id:${placeId}`,
+                  "_blank"
+                );
+              }}
+            >
+              <PlaceIcon fontSize="small" />
+              Xem thêm tại Maps
+            </button>
+          </div>
 
           <p className={styles.address}>📍 {data.formatted_address}</p>
 
