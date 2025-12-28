@@ -1,7 +1,7 @@
 package com.server.backend.services;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,8 +13,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import com.server.backend.dto.ItineraryDetail;
 import com.server.backend.dto.ItinerarySummary;
-import com.server.backend.dto.UpdateItineraryDetail;
 import com.server.backend.dto.UpdateItineraryInfo;
 import com.server.backend.models.entities.Itinerary;
 import com.server.backend.repositories.ItineraryRepository;
@@ -28,19 +28,16 @@ public class ItineraryService {
   @Autowired
   private MongoTemplate mongoTemplate;
 
-  @Autowired
-  private GooglePlaceService googlePlaceService;
-
   public Itinerary getItinerary(String id) {
     return itineraryRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Itinerary not found"));
   }
 
-  public Page<ItinerarySummary> getUserItineraries(String userId, Pageable pageable) {
+  public Page<ItinerarySummary> getUserItineraries(String email, Pageable pageable) {
 
-    // 1️⃣ Query theo userId
+    // 1️⃣ Query theo email
     Query query = new Query(
-        Criteria.where("userId").is(userId));
+        Criteria.where("userId").is(email));
 
     // 2️⃣ Sort + skip + limit (pagination chuẩn)
     query.with(pageable);
@@ -58,7 +55,7 @@ public class ItineraryService {
 
     // 5️⃣ Count đúng điều kiện (KHÔNG phân trang)
     Query countQuery = new Query(
-        Criteria.where("userId").is(userId));
+        Criteria.where("userId").is(email));
     long total = mongoTemplate.count(countQuery, "Itineraries");
 
     return new PageImpl<>(results, pageable, total);
@@ -68,20 +65,20 @@ public class ItineraryService {
     itineraryRepository.save(itinerary);
   }
 
-  public void updateItineraryDetail(UpdateItineraryDetail dto) {
-    Query query = new Query(Criteria.where("_id").is(dto.getId()));
-    Update update = new Update().set("detail", dto.getDetail());
+  public void updateItineraryDetail(String id, ArrayList<ItineraryDetail> detail) {
+    Query query = new Query(Criteria.where("_id").is(id));
+    Update update = new Update().set("detail", detail);
     mongoTemplate.updateFirst(query, update, Itinerary.class);
   }
 
-  public void updateItineraryInfo(UpdateItineraryInfo dto) {
-    Query query = new Query(Criteria.where("_id").is(dto.getId()));
+  public void updateItineraryInfo(String id, UpdateItineraryInfo info) {
+    Query query = new Query(Criteria.where("_id").is(id));
     Update update = new Update()
-        .set("name", dto.getName())
-        .set("startDate", dto.getStartDate())
-        .set("endDate", dto.getEndDate())
-        .set("note", dto.getNote())
-        .set("color", dto.getColor());
+        .set("name", info.getName())
+        .set("startDate", info.getStartDate())
+        .set("endDate", info.getEndDate())
+        .set("note", info.getNote())
+        .set("color", info.getColor());
 
     mongoTemplate.updateFirst(query, update, Itinerary.class);
   }
@@ -90,11 +87,16 @@ public class ItineraryService {
     itineraryRepository.deleteById(id);
   }
 
-  public Map<String, Object> searchPlaces(String query, double lat, double lng) {
-    return googlePlaceService.textSearch(query, lat, lng);
-  }
+  public void addCampsiteToItinerary(String itineraryId, ItineraryDetail place) {
+    Itinerary itinerary = itineraryRepository
+        .findById(itineraryId)
+        .orElseThrow(() -> new RuntimeException("Itinerary not found"));
 
-  public Map<String, Object> getPlaceDetails(String placeId) {
-    return googlePlaceService.getPlaceDetails(placeId);
+    if (itinerary.getDetail() == null) {
+      itinerary.setDetail(new ArrayList<>());
+    }
+
+    itinerary.getDetail().add(place);
+    itineraryRepository.save(itinerary);
   }
 }

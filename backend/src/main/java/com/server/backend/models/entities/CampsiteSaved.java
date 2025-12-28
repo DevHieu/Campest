@@ -13,7 +13,7 @@ public class CampsiteSaved {
   @Id
   private String id;
   private String placeId;
-  private String userId;
+  private String userEmail;
   private String name;
   private String image;
   private float rating;

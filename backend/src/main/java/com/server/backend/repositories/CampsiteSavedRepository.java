@@ -8,10 +8,10 @@ import com.server.backend.models.entities.CampsiteSaved;
 
 @Repository
 public interface CampsiteSavedRepository extends MongoRepository<CampsiteSaved, String> {
-  boolean existsByUserIdAndPlaceId(String userId, String placeId);
+  boolean existsByUserEmailAndPlaceId(String email, String placeId);
 
-  void deleteByUserIdAndPlaceId(String userId, String placeId);
+  void deleteByUserEmailAndPlaceId(String email, String placeId);
 
-  List<CampsiteSaved> findByUserId(String userId);
+  List<CampsiteSaved> findByUserEmail(String email);
 
 }
