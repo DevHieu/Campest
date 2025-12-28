@@ -34,9 +34,7 @@ export default function AddToItineraryModal({
   useEffect(() => {
     const getAllItineraries = async () => {
       try {
-        const res = await dispatch(
-          fetchSchedule({ userId: userId, page: 0, size: 100 })
-        );
+        const res = await dispatch(fetchSchedule({ page: 0, size: 100 }));
         setItineraries(res.payload.content);
       } catch (error) {
         console.error("Failed to fetch itineraries:", error);

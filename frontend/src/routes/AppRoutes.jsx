@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import PrivateRoutes from "./PrivateRoutes";
 
 import HomePage from "../pages/HomePage";
 import Login from "../pages/LoginPage";
@@ -13,15 +14,18 @@ import CampToolPage from "../pages/CampToolPage";
 const AppRoutes = () => {
   return (
     <Routes>
+      <Route element={<PrivateRoutes />}>
+        <Route path="/schedule/trip/:id" element={<TripPage />} />
+      </Route>
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/survival" element={<SurvivalPage />} />
       <Route path="/survival/post" element={<SurvivalPost />} />
       <Route path="/schedule" element={<SchedulePage />} />
-      <Route path="/schedule/trip/:id" element={<TripPage />} />
       <Route path="/campsite" element={<CampsitePage />} />
       <Route path="/tools" element={<CampToolPage />} />
+      <Route path="*" element={<p>There's nothing here: 404!</p>} />
     </Routes>
   );
 };

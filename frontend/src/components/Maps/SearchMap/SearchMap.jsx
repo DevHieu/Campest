@@ -3,7 +3,7 @@ import TextField from "@mui/material/TextField";
 import useDebounce from "../../../hooks/useDebounce";
 import { useAuth } from "../../../context/AuthProvider";
 import axios from "axios";
-import { searchPlace } from "../../../services/mapService";
+import { searchPlaceNearby } from "../../../services/mapService";
 
 const SearchInput = ({ onPlaceSelected, lat, lng }) => {
   const wrapperRef = useRef(null);
@@ -14,7 +14,7 @@ const SearchInput = ({ onPlaceSelected, lat, lng }) => {
   const debouncedQuery = useDebounce(query, 500);
 
   const fetchSuggestions = async (query) => {
-    const res = await searchPlace(query, lat, lng);
+    const res = await searchPlaceNearby(query, lat, lng);
     setSuggestions(res.data.results);
   };
 

@@ -6,13 +6,16 @@ const axiosClient = axios.create({
 });
 
 axiosClient.interceptors.request.use((config) => {
-  const token = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("token="))
-    ?.split("=")[1];
+  if (config.url.startsWith("/user") || config.url.startsWith("/admin")) {
+    const token = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("token="))
+      ?.split("=")[1];
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    if (token) {
+      console.log("Attaching token to request:", token);
+      config.headers.Authorization = `Bearer ${token}`;
+    }
   }
 
   return config;

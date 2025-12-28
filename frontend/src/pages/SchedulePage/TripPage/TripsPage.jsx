@@ -67,6 +67,7 @@ const TripPage = () => {
   };
 
   const debounceNote = useDebounce(notes, 500);
+  const debounceDetail = useDebounce(itinerary, 1000);
 
   const markerIcon = (index) => {
     const markerHTML = ReactDOMServer.renderToStaticMarkup(
@@ -204,17 +205,10 @@ const TripPage = () => {
   //update itinerary details
   useDidMount(() => {
     const saveDetail = async () => {
-      if (itinerary.length === 0) return;
-
       try {
         isSaving(true);
 
-        const data = {
-          id,
-          detail: itinerary,
-        };
-
-        await updateItineraryDetail(data); // ⬅️ đợi xong
+        await updateItineraryDetail(id, debounceDetail);
       } catch (e) {
         console.error("Update itinerary detail failed", e);
         setSaveError(true);
@@ -224,7 +218,7 @@ const TripPage = () => {
     };
 
     saveDetail();
-  }, [itinerary]);
+  }, [debounceDetail]);
 
   //update itinerary info
   useDidMount(() => {
@@ -235,7 +229,6 @@ const TripPage = () => {
         isSaving(true);
 
         const data = {
-          id,
           name: tripName,
           startDate,
           endDate,
@@ -243,7 +236,7 @@ const TripPage = () => {
           color,
         };
 
-        await updateItineraryInfo(data);
+        await updateItineraryInfo(id, data);
       } catch (e) {
         console.error("Update itinerary info failed", e);
         setSaveError(true);

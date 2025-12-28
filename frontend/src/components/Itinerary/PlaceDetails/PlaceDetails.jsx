@@ -27,7 +27,7 @@ export default function PlaceDetails({
         setIsLoading(true);
         const res = await getPlaceDetail(placeId);
 
-        setData(res.data.result);
+        setData(res.result);
       } catch (err) {
         console.error("Error get place detail:", err);
       } finally {

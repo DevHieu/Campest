@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useRequireAuth from "../../hooks/useRequireAuth";
 import { nanoid, customAlphabet } from "nanoid";
 import { useAuth } from "../../context/AuthProvider";
 import axios from "axios";
@@ -9,19 +10,28 @@ import { fetchSchedule } from "../../store/scheduleSlice";
 import styles from "./Schedule.module.css";
 import ScheduleItem from "../../components/ScheduleItem";
 import Loading from "../../components/Loading";
-import { TextField, Button, Autocomplete } from "@mui/material";
+import RequireAuthDialog from "../../components/RequireAuthDialog";
+import {
+  TextField,
+  Button,
+  Autocomplete,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import useDidMount from "../../hooks/useDidMount";
+import { createItinerary } from "../../services/itineraryService";
 
 export default function SchedulePage() {
-  const url = import.meta.env.VITE_BACKEND_API;
   const COUNTRY_API_KEY = import.meta.env.VITE_COUNTRY_CITIES_API_KEY;
   const dispatch = useDispatch();
-
+  const { open, close, requireAuth } = useRequireAuth();
   const [loading, isLoading] = useState(true);
   const [itineraries, setItineraries] = useState([]);
   const [countryData, setCountryData] = useState({});
@@ -32,6 +42,7 @@ export default function SchedulePage() {
   const [endDate, setEndDate] = useState(
     dayjs().add(1, "day").format("MM/DD/YYYY")
   );
+  const [openLogin, setOpenLogin] = useState(false);
   const { user, cookies, logout } = useAuth();
   const navigateTo = useNavigate();
   dayjs.extend(customParseFormat);
@@ -114,44 +125,30 @@ export default function SchedulePage() {
     }
   };
 
-  const createItinerary = async () => {
-    if (!cookies.token) {
-      logout();
+  const createNewItinerary = async () => {
+    try {
+      const randomId = nanoid();
+      const coor = await getCoordinate();
+      const name = state?.name || country?.name || "Unknown";
+
+      const data = {
+        id: randomId,
+        userId: user.email,
+        name: "Trip to " + name,
+        startDate: startDate,
+        endDate: endDate,
+        latitude: coor.lat,
+        longitude: coor.lng,
+        note: "",
+        detail: [],
+        color: "#20321e",
+      };
+
+      await createItinerary(data);
+      navigateTo("/schedule/trip/" + randomId);
+    } catch (error) {
+      console.error("Error creating itinerary:", error);
     }
-
-    const randomId = nanoid();
-    const coor = await getCoordinate();
-    const name = state?.name || country?.name || "Unknown";
-
-    const options = {
-      headers: {
-        Authorization: `Bearer ${cookies.token}`,
-      },
-    };
-
-    axios
-      .post(
-        `${url}/itinerary/create-itinerary`,
-        {
-          id: randomId,
-          userId: user.id,
-          name: "Trip to " + name,
-          startDate: startDate,
-          endDate: endDate,
-          latitude: coor.lat,
-          longitude: coor.lng,
-          note: "",
-          detail: [],
-          color: "#20321e",
-        },
-        options
-      )
-      .then(() => {
-        navigateTo("/schedule/trip/" + randomId);
-      })
-      .catch((error) => {
-        console.error("Error creating itinerary:", error);
-      });
   };
 
   if (loading) {
@@ -220,7 +217,10 @@ export default function SchedulePage() {
             />
           </LocalizationProvider>
         </div>
-        <Button onClick={createItinerary} className="shadow_btn">
+        <Button
+          onClick={() => requireAuth(createNewItinerary)}
+          className="shadow_btn"
+        >
           Tạo chuyến đi ngay
         </Button>
       </div>
@@ -241,6 +241,8 @@ export default function SchedulePage() {
           ))}
         </div>
       </div>
+
+      <RequireAuthDialog open={open} onClose={close} />
     </div>
   );
 }

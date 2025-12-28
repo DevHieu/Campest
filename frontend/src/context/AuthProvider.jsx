@@ -34,7 +34,6 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     removeCookie("token", { path: "/" });
-    navigateTo("/login");
   };
 
   return (

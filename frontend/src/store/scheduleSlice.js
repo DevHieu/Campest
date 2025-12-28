@@ -3,8 +3,8 @@ import { getAllItineraries } from "../services/itineraryService";
 
 export const fetchSchedule = createAsyncThunk(
   "schedule/fetch",
-  async ({ userId, page, size }) => {
-    const res = await getAllItineraries(userId, page, size);
+  async ({ page, size }) => {
+    const res = await getAllItineraries(page, size);
     return res.data;
   }
 );
