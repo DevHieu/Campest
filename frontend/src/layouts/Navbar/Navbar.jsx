@@ -3,15 +3,10 @@ import styles from "./Navbar.module.css";
 import logo from "../../assets/images/logo.png";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthProvider";
-
-import Avatar from "@mui/material/Avatar";
+import UserMenu from "../../components/UserMenu";
 
 export default function Navbar() {
   const { user } = useAuth();
-
-  const firstLetter = (name) => {
-    return name.substring(0, 1).toUpperCase();
-  };
 
   return (
     <div className={styles.wrapper}>
@@ -39,11 +34,7 @@ export default function Navbar() {
               Đăng nhập
             </Link>
           ) : (
-            <Link to="/user" className={styles.nav_list_avatar}>
-              <Avatar sx={{ bgcolor: "#20321e" }} className={styles.avatar}>
-                {firstLetter(user.username)}
-              </Avatar>
-            </Link>
+            <UserMenu user={user} />
           )}
         </div>
       </div>

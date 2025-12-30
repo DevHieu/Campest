@@ -15,6 +15,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { makeStyles } from "@mui/styles";
 import Container from "@mui/material/Container";
+import { register } from "../../services/authService";
 
 function Copyright() {
   return (
@@ -93,7 +94,7 @@ export default function SignUp() {
     navigateTo("/");
   };
 
-  const sendSignUp = () => {
+  const sendSignUp = async () => {
     setVerifyUser(true);
     setVerifyEmail(true);
     setVerifyPassword(true);
@@ -104,20 +105,18 @@ export default function SignUp() {
       return 0;
     }
 
-    axios
-      .post(`${url}/signup`, {
+    try {
+      const data = {
         username: username,
         email: email,
         password: password,
-      })
-      .then(
-        (response) => {
-          handleResponse(response);
-        },
-        (error) => {
-          setVerifyEmail(false);
-        }
-      );
+      };
+      const res = await register(data);
+
+      handleResponse(res);
+    } catch (error) {
+      setVerifyEmail(false);
+    }
   };
 
   return (

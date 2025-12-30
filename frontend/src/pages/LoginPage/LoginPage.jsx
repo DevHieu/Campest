@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
-import useDebounce from "../../hooks/useDebounce";
-import axios from "axios";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
-
+import GoogleLogo from "../../assets/google-icon.svg";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -16,21 +14,16 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { makeStyles } from "@mui/styles";
 import Container from "@mui/material/Container";
-import { Link as RouteLink } from "react-router-dom";
+import Copyright from "../../components/Copyright";
 import Alert from "@mui/material/Alert";
+import { login } from "../../services/authService";
+import { Divider } from "@mui/material";
+import { Link as RouteLink } from "react-router-dom";
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <RouteLink to="/" color="inherit">
-        Campest
-      </RouteLink>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -62,37 +55,37 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [verify, setVerify] = useState(true);
   const [remember, setRemember] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (email === "" || password === "") {
       setVerify(false);
       return;
     }
 
-    axios
-      .post(`${url}/signin`, {
+    try {
+      const res = await login({
         email: email,
         password: password,
-      })
-      .then(
-        (response) => {
-          if (remember) {
-            setCookie("token", response.data.token, {
-              path: "/",
-              maxAge: 7 * 24 * 60 * 60, // The token's expiration date is 1 week
-            });
-          } else {
-            setCookie("token", response.data.token, {
-              path: "/",
-              maxAge: 24 * 60 * 60, // The token's expiration date is 1 day
-            });
-          }
-          navigateTo("/");
-        },
-        (error) => {
-          setVerify(false);
-        }
-      );
+      });
+
+      console.log(res);
+
+      if (remember) {
+        setCookie("token", res.data, {
+          path: "/",
+          maxAge: 7 * 24 * 60 * 60, // The token's expiration date is 1 week
+        });
+      } else {
+        setCookie("token", res.data, {
+          path: "/",
+          maxAge: 24 * 60 * 60, // The token's expiration date is 1 day
+        });
+      }
+      navigateTo("/");
+    } catch (error) {
+      setVerify(false);
+    }
   };
 
   return (
@@ -105,9 +98,18 @@ export default function LoginPage() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form className={classes.form} noValidate>
+        <form
+          className={classes.form}
+          noValidate
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleLogin();
+          }}
+        >
           {!verify && (
-            <Alert severity="error">Incorrect username or password.</Alert>
+            <Alert severity="error" sx={{ mt: 1 }}>
+              Email or password is incorrect
+            </Alert>
           )}
           <TextField
             variant="outlined"
@@ -117,12 +119,11 @@ export default function LoginPage() {
             id="email"
             label="Email"
             name="email"
+            type="email"
             autoComplete="email"
             autoFocus
             value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <TextField
             variant="outlined"
@@ -131,23 +132,36 @@ export default function LoginPage() {
             fullWidth
             name="password"
             label="Password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             id="password"
             autoComplete="current-password"
             value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
+            onChange={(e) => setPassword(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowPassword(!showPassword)}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
             }}
           />
           <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
+            control={
+              <Checkbox
+                color="primary"
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
+              />
+            }
             label="Remember me"
-            checked={remember}
-            onChange={(e) => {
-              setRemember(e.target.checked);
-            }}
           />
           <Button
+            disabled={!email || !password}
             type="button"
             fullWidth
             variant="contained"
@@ -158,6 +172,37 @@ export default function LoginPage() {
             onClick={handleLogin}
           >
             Sign In
+          </Button>
+          <Divider sx={{ my: 2 }}>OR</Divider>
+
+          <Button
+            fullWidth
+            variant="outlined"
+            startIcon={
+              <img
+                src={GoogleLogo}
+                alt="Google"
+                style={{ width: 20, height: 20 }}
+              />
+            }
+            sx={{
+              textTransform: "none",
+              fontWeight: 500,
+              fontSize: 16,
+              borderColor: "#ddd",
+              color: "#444",
+              py: 1,
+              "&:hover": {
+                borderColor: "#aaa",
+                backgroundColor: "#f5f5f5",
+              },
+              mb: 3,
+            }}
+            onClick={() => {
+              window.location.href = `${url}/oauth2/authorization/google`;
+            }}
+          >
+            Sign in with Google
           </Button>
           <Grid container>
             <Grid item xs sx={{ fontSize: 14 }}>
