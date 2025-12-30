@@ -24,6 +24,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.server.backend.config.JwtFilter;
+import com.server.backend.security.oauth2.OAuth2SuccessHandler;
 
 @EnableMethodSecurity
 @Configuration
@@ -36,7 +37,10 @@ public class SecurityConfig {
   @Autowired
   private UserDetailsService userDetailsService;
 
-  @Value("${FRONTEND_URL}")
+  @Autowired
+  private OAuth2SuccessHandler oAuth2SuccessHandler;
+
+  @Value("${frontend.url}")
   private String frontendUrl;
 
   @Bean
@@ -47,15 +51,15 @@ public class SecurityConfig {
 
         .authorizeHttpRequests(request -> request
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-            .requestMatchers("/signup", "/signin", "/keepalive").permitAll()
-            .requestMatchers("/public/**").permitAll()
+            .requestMatchers("/auth/**", "/public/**", "/keepalive").permitAll()
             .requestMatchers("/user/**").authenticated()
             .anyRequest().authenticated())
+        .oauth2Login(oauth -> oauth
+            .successHandler(oAuth2SuccessHandler))
         .httpBasic(customizer -> customizer.disable())
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
-
   }
 
   @Bean

@@ -6,7 +6,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.mongodb.lang.NonNull;
-import com.server.backend.models.enums.UserEnum;
+import com.mongodb.lang.Nullable;
+import com.server.backend.models.enums.ProviderEnum;
+import com.server.backend.models.enums.RoleEnum;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,10 +28,13 @@ public class User {
     @Field("email")
     @Indexed(unique = true)
     private String email;
-    @NonNull
+    @Nullable
     @Field("password")
     private String password;
     @NonNull
+    @Field("provider")
+    private ProviderEnum provider; // Local, Google, etc.
+    @NonNull
     @Field("role")
-    private UserEnum role;
+    private RoleEnum role; // Admin, User
 }

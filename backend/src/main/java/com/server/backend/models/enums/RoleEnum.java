@@ -1,5 +1,5 @@
 package com.server.backend.models.enums;
 
-public enum UserEnum {
+public enum RoleEnum {
   ADMIN, USER
 }
